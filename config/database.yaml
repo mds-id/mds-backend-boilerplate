@@ -1,0 +1,7 @@
+database:
+  driver: "pdo_mysql"
+  schema: "foo_user"
+  username: "root"
+  password: "gandung089"
+  host: "localhost"
+  port: 3306
