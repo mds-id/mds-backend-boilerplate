@@ -34,7 +34,6 @@ $container = $containerBuilder->build();
 AppFactory::setContainer($container);
 
 $app = new Core(AppFactory::create());
-//$callableResolver = $app->getCallableResolver();
 
 // Register middleware
 $middleware = require __DIR__ . '/../app/middleware.php';

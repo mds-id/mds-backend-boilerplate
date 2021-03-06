@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bluepeer\Core;
+namespace Bluepeer\Core\Dbal;
 
 use Doctrine\DBAL\Connection;
 
