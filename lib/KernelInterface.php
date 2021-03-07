@@ -6,11 +6,14 @@ namespace Bluepeer\Core;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Slim\Interfaces\RouteCollectorProxyInterface;
 
 /**
  * @author Paulus Gandung Prakosa <rvn.plvhx@gmail.com>
  */
-interface KernelInterface extends ContainerInterface
+interface KernelInterface extends
+	ContainerInterface,
+	ContainerAwareInterface
 {
 	/**
 	 * Get request handler object.
@@ -26,14 +29,4 @@ interface KernelInterface extends ContainerInterface
 	 * @return void
 	 */
 	public function setHandler(RequestHandlerInterface $handler);
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get($id);
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function has($id);
 }

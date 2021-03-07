@@ -11,8 +11,22 @@ use Slim\Interfaces\RouteInterface;
 /**
  * @author Paulus Gandung Prakosa <rvn.plvhx@gmail.com>
  */
-class Core extends AbstractKernel implements RouteMappingInterface
+class RouteMapping implements RouteMappingInterface
 {
+	/**
+	 * @var Bluepeer\Core\KernelInterface
+	 */
+	private $kernel;
+
+	/**
+	 * @param \Bluepeer\Core\KernelInterface $kernel
+	 * @return static
+	 */
+	public function __construct(KernelInterface $kernel)
+	{
+		$this->kernel = $kernel;
+	}
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -80,11 +94,13 @@ class Core extends AbstractKernel implements RouteMappingInterface
 	{
 		$this->checkCallableRequirements($callable);
 
-		return $this->getHandler()->map(
-			$methods,
-			$pattern,
-			[$this->get($callable[0]), $callable[1]]
-		);
+		return $this->kernel
+			->getHandler()
+			->map(
+				$methods,
+				$pattern,
+				[$this->kernel->get($callable[0]), $callable[1]]
+			);
 	}
 
 	/**

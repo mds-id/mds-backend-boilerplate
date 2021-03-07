@@ -1,8 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
-use Bluepeer\Core\Entity;
-use Bluepeer\Core\EntityInterface;
+use Bluepeer\Core\Dbal\Entity;
+use Bluepeer\Core\Dbal\EntityInterface;
 use DI\ContainerBuilder;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;

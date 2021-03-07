@@ -1,7 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-use Bluepeer\Core\RouteMappingInterface;
+use Bluepeer\Core\KernelInterface;
 
-return function (RouteMappingInterface $router) {
+return function (KernelInterface $kernel) {
 };

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use Bluepeer\Core\Core;
+use Bluepeer\Core\Kernel;
 use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
@@ -27,32 +27,26 @@ $dependencies($containerBuilder);
 $repositories = require __DIR__ . '/../app/repositories.php';
 $repositories($containerBuilder);
 
-// Build PHP-DI Container instance
-$container = $containerBuilder->build();
-
-// Instantiate the app
-AppFactory::setContainer($container);
-
-$app = new Core(AppFactory::create());
+$kernel = new Kernel($containerBuilder->build());
 
 // Register middleware
 $middleware = require __DIR__ . '/../app/middleware.php';
-$middleware($app);
+$middleware($kernel);
 
 // Register routes
 $routes = require __DIR__ . '/../app/routes.php';
-$routes($app);
+$routes($kernel);
 
 // Create Request object from globals
 $serverRequestCreator = ServerRequestCreatorFactory::create();
 $request = $serverRequestCreator->createServerRequestFromGlobals();
 
-$responseFactory = $app->getHandler()->getResponseFactory();
+$responseFactory = $kernel->getResponseFactory();
 
 // Add Routing Middleware
-$app->getHandler()->addRoutingMiddleware();
+$kernel->addRoutingMiddleware();
 
 // Run App & Emit Response
-$response = $app->getHandler()->handle($request);
+$response = $app->handle($request);
 $responseEmitter = new ResponseEmitter();
 $responseEmitter->emit($response);
