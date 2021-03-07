@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bluepeer\Controller;
+namespace Bluepeer\Core\Controller;
 
 /**
  * @author Paulus Gandung Prakosa <rvn.plvhx@gmail.com>

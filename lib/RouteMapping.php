@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Bluepeer\Core;
 
 use InvalidArgumentException;
-use Bluepeer\Controller\AbstractController;
+use Bluepeer\Core\Controller\AbstractController;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\RouteInterface;
