@@ -6,6 +6,8 @@ namespace Bluepeer\Core;
 
 use InvalidArgumentException;
 use Bluepeer\Controller\AbstractController;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\RouteInterface;
 
 /**
@@ -101,6 +103,14 @@ class RouteMapping implements RouteMappingInterface
 				$pattern,
 				[$this->kernel->get($callable[0]), $callable[1]]
 			);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function handle(ServerRequestInterface $request): ResponseInterface
+	{
+		return $this->kernel->handle($request);
 	}
 
 	/**

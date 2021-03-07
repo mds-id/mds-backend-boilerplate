@@ -9,7 +9,7 @@ use Slim\Interfaces\RouteInterface;
 /**
  * @author Paulus Gandung Prakosa <rvn.plvhx@gmail.com>
  */
-interface RouteMappingInterface
+interface RouteMappingInterface extends HandleAwareInterface
 {
 	/**
 	 * Map current route pattern with 'GET' method.

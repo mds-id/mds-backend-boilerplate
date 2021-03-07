@@ -13,7 +13,8 @@ use Slim\Interfaces\RouteCollectorProxyInterface;
  */
 interface KernelInterface extends
 	ContainerInterface,
-	ContainerAwareInterface
+	ContainerAwareInterface,
+	HandleAwareInterface
 {
 	/**
 	 * Get request handler object.

@@ -2,7 +2,9 @@
 declare(strict_types=1);
 
 use Bluepeer\Core\Kernel;
+use Bluepeer\Core\RouteMapping;
 use DI\ContainerBuilder;
+use Slim\ResponseEmitter;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
 
@@ -33,9 +35,12 @@ $kernel = new Kernel($containerBuilder->build());
 $middleware = require __DIR__ . '/../app/middleware.php';
 $middleware($kernel);
 
+// Initiate the route mapper.
+$router = new RouteMapping($kernel);
+
 // Register routes
 $routes = require __DIR__ . '/../app/routes.php';
-$routes($kernel);
+$routes($router);
 
 // Create Request object from globals
 $serverRequestCreator = ServerRequestCreatorFactory::create();
@@ -47,6 +52,6 @@ $responseFactory = $kernel->getResponseFactory();
 $kernel->addRoutingMiddleware();
 
 // Run App & Emit Response
-$response = $app->handle($request);
+$response = $router->handle($request);
 $responseEmitter = new ResponseEmitter();
 $responseEmitter->emit($response);

@@ -90,8 +90,7 @@ final class Kernel implements KernelInterface
 	}
 
 	/**
-	 * @param ServerRequestInterface $request
-	 * @return ResponseInterface
+	 * {@inheritdoc}
 	 */
 	public function handle(ServerRequestInterface $request): ResponseInterface
 	{

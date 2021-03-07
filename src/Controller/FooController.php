@@ -21,6 +21,6 @@ class FooController extends AbstractController
 	public function doShit(Request $request, Response $response, array $args): Response
 	{
 		dump($this->entity);
-		return new ConcreteResponse();
+		return $response;
 	}
 }
