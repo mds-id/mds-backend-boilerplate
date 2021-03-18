@@ -1,24 +1,18 @@
 {
-    "name": "slim/slim-skeleton",
-    "description": "A Slim Framework skeleton application for rapid development",
+    "name": "mds-id/framework",
+    "description": "REST API centric microframework based on Slim for mds.id organization.",
     "keywords": [
         "microframework",
         "rest",
         "router",
         "psr7"
     ],
-    "homepage": "http://github.com/slimphp/Slim-Skeleton",
-    "license": "MIT",
+    "license": "BSD-3-Clause",
     "authors": [
         {
-            "name": "Josh Lockhart",
-            "email": "info@joshlockhart.com",
-            "homepage": "http://www.joshlockhart.com/"
-        },
-        {
-            "name": "Pierre Berube",
-            "email": "pierre@lgse.com",
-            "homepage": "http://www.lgse.com/"
+            "name": "Paulus Gandung Prakosa",
+            "email": "rvn.plvhx@gmail.com",
+            "homepage": "https://github.com/plvhx"
         }
     ],
     "require": {
