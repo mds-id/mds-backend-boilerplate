@@ -28,5 +28,94 @@ use Bluepeer\Repository\UserRepository;
 class User extends Model
 {
 	/**
+	 * @var int
+	 */
+	private $id;
+
+	/**
+	 * @var string
+	 */
+	private $name;
+
+	/**
+	 * @var string
+	 */
+	private $email;
+
+	/**
+	 * Get id.
+	 *
+	 * @return int
+	 */
+	public function getId(): int
+	{
+		return $this->id;
+	}
+
+	/**
+	 * Get name.
+	 *
+	 * @return string
+	 */
+	public function getName(): string
+	{
+		return $this->name;
+	}
+
+	/**
+	 * Set name.
+	 *
+	 * @param string $name
+	 * @return void
+	 */
+	public function setName(string $name)
+	{
+		$this->name = $name;
+	}
+
+	/**
+	 * Get email.
+	 *
+	 * @return string
+	 */
+	public function getEmail(): string
+	{
+		return $this->email;
+	}
+
+	/**
+	 * Set email.
+	 *
+	 * @param string $email
+	 * @return void
+	 */
+	public function setEmail(string $email)
+	{
+		$this->email = $email;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getPrimaryKey(): string
+	{
+		return 'id';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function getDefaultTable(): string
+	{
+		return 'user';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function getDefaultRepository(): string
+	{
+		return UserRepository::class;
+	}
 }
 ```
