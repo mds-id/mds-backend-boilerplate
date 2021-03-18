@@ -119,3 +119,39 @@ class User extends Model
 	}
 }
 ```
+
+Now, our ```User``` entity class was done. Next, we will do simple write-based DBA operation (insert, update, delete) using that class entity we made before. To do ```insert``` write-based operation, we can do just like this:
+
+```
+<?php
+
+declare(strict_types=1);
+
+namespace Bluepeer\Controller;
+
+use Bluepeer\Entity\User;
+use Bluepeer\Core\Controller\AbstractController;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\RequestInterface as Request;
+
+class UserController extends AbstractController
+{
+	public function insert(Request $request, Response $response, array $args): Response
+	{
+		// get entity manager object
+		$entity = $this->getEntity();
+		// get new instance of 'User' entity class.
+		$user = new User();
+
+		// set 'name' field using method 'setName'
+		$user->setName('foobar');
+		// set 'email' field using method 'setEmail'
+		$user->setEmail('foo@example.com');
+
+		// persist '$user' into real entity.
+		$entity->persist($user);
+		// return instance of \Psr\Http\Message\ResponseInterface
+		return $response;
+	}
+}
+```
