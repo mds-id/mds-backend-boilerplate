@@ -40,4 +40,11 @@ interface ModelInterface
 	 * @return void
 	 */
 	public function setRepository(string $repository);
+
+	/**
+	 * Get associated model's primary key.
+	 *
+	 * @return string
+	 */
+	public function getPrimaryKey(): string;
 }

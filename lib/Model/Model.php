@@ -63,6 +63,11 @@ abstract class Model implements ModelInterface
 	}
 
 	/**
+	 * {@inheritdoc}
+	 */
+	abstract public function getPrimaryKey(): string;
+
+	/**
 	 * Get default table name.
 	 *
 	 * @return string

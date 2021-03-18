@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use Bluepeer\Core\Dbal\Entity;
 use Bluepeer\Core\Dbal\EntityInterface;
+use Bluepeer\Core\Inflector\InflectorFactory;
+use Bluepeer\Core\Inflector\InflectorFactoryInterface;
 use DI\ContainerBuilder;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -24,7 +26,13 @@ return function (ContainerBuilder $containerBuilder) {
             return $connection;
         },
         EntityInterface::class => function (ContainerInterface $container) {
-            return new Entity($container->get(Connection::class));
+            return new Entity(
+                $container->get(Connection::class),
+                $container->get(InflectorFactoryInterface::class)
+            );
         },
+        InflectorFactoryInterface::class => function (ContainerInterface $container) {
+            return new InflectorFactory();
+        }
     ]);
 };

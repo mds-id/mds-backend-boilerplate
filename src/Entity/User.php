@@ -53,6 +53,14 @@ class User extends Model
 	/**
 	 * {@inheritdoc}
 	 */
+	public function getPrimaryKey(): string
+	{
+		return 'id';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	protected function getDefaultTable(): string
 	{
 		return 'user';

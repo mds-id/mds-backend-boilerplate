@@ -16,7 +16,7 @@ class UserController extends AbstractController
 		$entity = $this->getEntity();
 		$user   = new User();
 
-		$user->setName('foo #1');
+		$user->setName('foo #2');
 		$user->setEmail('foo@example.com');
 
 		$entity->persist($user);
@@ -39,5 +39,56 @@ class UserController extends AbstractController
 		}
 
 		return $this->asJson($response, $result);
+	}
+
+	public function getById(Request $request, Response $response, array $args): Response
+	{
+		$user = $this->getEntity()
+			->getRepository(User::class)
+			->find($args['id']);
+
+		return $this->asJson(
+			$response,
+			$user == null
+				? []
+				: [
+					'id' => $user->getId(),
+					'name' => $user->getName(),
+					'email' => $user->getEmail()
+				]
+		);
+	}
+
+	public function update(Request $request, Response $response, array $args): Response
+	{
+		$user = $this->getEntity()
+			->getRepository(User::class)
+			->find($args['id']);
+
+		if ($user === null) {
+			return $this->asJson($response, []);
+		}
+
+		$user->setName('gandung');
+		$user->setEmail('gandung@php.net');
+
+		$entity = $this->getEntity();
+		$entity->save($user);
+
+		return $this->asJson($response, []);
+	}
+
+	public function delete(Request $request, Response $response, array $args): Response
+	{
+		$entity = $this->getEntity();
+		$user   = $entity->getRepository(User::class)
+			->find($args['id']);
+
+		if ($user === null) {
+			return $this->asJson($response, []);
+		}
+
+		$entity->remove($user);
+		return $this->asJson($response, []);
 	}
 }

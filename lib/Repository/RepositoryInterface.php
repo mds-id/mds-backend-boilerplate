@@ -50,7 +50,18 @@ interface RepositoryInterface
 	public function getQueryBuilder();
 
 	/**
-	 * ...
+	 * Get all entries from associated entity and deserialize
+	 * it into array of model class object.
+	 *
+	 * @return array
 	 */
-	public function findAll();
+	public function findAll(): array;
+
+	/**
+	 * Get entry from associated entity by it's primary key
+	 * value and deserialize it into model class object.
+	 *
+	 * @return \Bluepeer\Core\Model\ModelInterface|null
+	 */
+	public function find($id);
 }

@@ -7,6 +7,7 @@ namespace Bluepeer\Core\Dbal;
 use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionProperty;
+use Bluepeer\Core\Inflector\InflectorFactoryInterface;
 use Bluepeer\Core\Model\ModelInterface;
 use Bluepeer\Core\Repository\RepositoryInterface;
 use Doctrine\DBAL\Connection;
@@ -24,11 +25,21 @@ class Entity implements EntityInterface
 	private $connection;
 
 	/**
+	 * @var \Bluepeer\Core\Inflector\InflectorFactoryInterface
+	 */
+	private $inflectorFactory;
+
+	/**
+	 * @param \Doctrine\DBAL\Connection $connection
+	 * @param \Bluepeer\Core\Inflector\InflectorFactoryInterface $inflectorFactory
 	 * @return static
 	 */
-	public function __construct(Connection $connection)
-	{
+	public function __construct(
+		Connection $connection,
+		InflectorFactoryInterface $inflectorFactory
+	) {
 		$this->setConnection($connection);
+		$this->setInflectorFactory($inflectorFactory);
 	}
 
 	/**
@@ -45,6 +56,22 @@ class Entity implements EntityInterface
 	public function setConnection(Connection $connection)
 	{
 		$this->connection = $connection;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getInflectorFactory(): InflectorFactoryInterface
+	{
+		return $this->inflectorFactory;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setInflectorFactory(InflectorFactoryInterface $inflectorFactory)
+	{
+		$this->inflectorFactory = $inflectorFactory;
 	}
 
 	/**
@@ -71,12 +98,73 @@ class Entity implements EntityInterface
 	}
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public function save(ModelInterface $model)
+	{
+		$normalized   = $this->transformEntity($model);
+		$queryBuilder = $this->getConnection()
+			->createQueryBuilder()
+			->update($model->getTable());
+
+		foreach (array_keys($normalized) as $key) {
+			$queryBuilder = $queryBuilder->set($key, '?');		
+		}
+
+		foreach (array_values($normalized) as $key => $value) {
+			$queryBuilder = $queryBuilder->setParameter($key, $value);
+		}
+
+		$primaryKey     = $model->getPrimaryKey();
+		$normalized     = ucfirst($primaryKey);
+		$queryBuilder   = $queryBuilder
+			->where(sprintf('%s = ?', $primaryKey))
+			->setParameter(
+				$key + 1,
+				call_user_func([$model, sprintf('get%s', $normalized)])
+			);
+
+		$queryBuilder->execute();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function remove(ModelInterface $model)
+	{
+		$primaryKey = $model->getPrimaryKey();
+		$normalized = ucfirst($primaryKey);
+		$pval       = call_user_func([
+			$model,
+			sprintf('get%s', $normalized)
+		]);
+
+		if ($pval === null) {
+			throw new InvalidArgumentException(
+				'Primary key of given model class object has null value.'
+			);
+		}
+
+		$queryBuilder = $this->getConnection()
+			->createQueryBuilder()
+			->delete($model->getTable())
+			->where(sprintf('%s = ?', $primaryKey))
+			->setParameter(0, $pval);
+
+		$queryBuilder->execute();
+	}
+
+	/**
 	 * Extract key and value for entity record creation.
 	 */
 	private function transformEntity(ModelInterface $model)
 	{
+		$inflector = $this->getInflectorFactory()
+			->createSimpleInflector();
+
 		foreach ($this->getModelClassProperties($model) as $name) {
-			$result[$name] = $this->modelPropertyAccessor(
+			$normalized          = $inflector->camelize($name);
+			$result[$normalized] = $this->modelPropertyAccessor(
 				$model,
 				$name,
 				EntityInterface::MODEL_PROPERTY_ACCESS_READ
@@ -130,12 +218,13 @@ class Entity implements EntityInterface
 			);
 		}
 
+		$obj->setAccessible(true);
+
 		switch ($op) {
 			case EntityInterface::MODEL_PROPERTY_ACCESS_READ:
-				$ret = $obj->getValue();
+				$ret = $obj->getValue($model);
 				break;
 			case EntityInterface::MODEL_PROPERTY_ACCESS_WRITE:
-				$obj->setAccessible(true);
 				$obj->setValue($model, $data);
 				break;
 		}

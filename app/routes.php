@@ -19,4 +19,7 @@ return function (RouteMappingInterface $router) {
 
 	$router->get('/create', [UserController::class, 'create']);
 	$router->get('/all', [UserController::class, 'getAll']);
+	$router->get('/foo/{id}', [UserController::class, 'getById']);
+	$router->put('/bar/{id}', [UserController::class, 'update']);
+	$router->get('/baz/{id}', [UserController::class, 'delete']);
 };

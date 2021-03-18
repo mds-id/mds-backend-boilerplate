@@ -8,6 +8,7 @@ use Bluepeer\Core\Dbal\EntityInterface;
 use Bluepeer\Core\Model\ModelInterface;
 use Doctrine\DBAL\Query\QueryBuilder;
 
+use function sprintf;
 use function ucfirst;
 
 /**
@@ -81,7 +82,7 @@ abstract class EntityRepository implements RepositoryInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function findAll()
+	public function findAll(): array
 	{
 		$statement  = $this->getQueryBuilder()
 			->select('*')
@@ -89,6 +90,9 @@ abstract class EntityRepository implements RepositoryInterface
 			->execute();
 		$properties = $this->getEntity()
 			->getModelClassProperties($this->getModel());
+		$inflector  = $this->getEntity()
+			->getInflectorFactory()
+			->createSimpleInflector();
 		$aggregated = [];
 
 		while (($row = $statement->fetchAssociative()) !== false) {
@@ -100,7 +104,7 @@ abstract class EntityRepository implements RepositoryInterface
 						$robj,
 						$name,
 						EntityInterface::MODEL_PROPERTY_ACCESS_WRITE,
-						$row[$name]
+						$row[$inflector->snakeize($name)]
 					);
 			}
 
@@ -108,5 +112,42 @@ abstract class EntityRepository implements RepositoryInterface
 		}
 
 		return $aggregated;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function find($id)
+	{
+		$statement = $this->getQueryBuilder()
+			->select('*')
+			->from($this->getModel()->getTable())
+			->where(sprintf('%s = ?', $this->getModel()->getPrimaryKey()))
+			->setParameter(0, $id)
+			->execute();
+		$inflector = $this->getEntity()
+			->getInflectorFactory()
+			->createSimpleInflector();
+		$row       = $statement->fetchAssociative();
+
+		if ($row == null) {
+			return null;
+		}
+
+		$properties = $this->getEntity()
+			->getModelClassProperties($this->getModel());
+		$robj       = clone $this->getModel();
+
+		foreach ($properties as $name) {
+			$this->getEntity()
+				->modelPropertyAccessor(
+					$robj,
+					$name,
+					EntityInterface::MODEL_PROPERTY_ACCESS_WRITE,
+					$row[$inflector->snakeize($name)]
+				);
+		}
+
+		return $robj;
 	}
 }
