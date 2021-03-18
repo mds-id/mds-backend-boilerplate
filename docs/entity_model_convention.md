@@ -120,7 +120,7 @@ class User extends Model
 }
 ```
 
-Now, our ```User``` entity class was done. Next, we will do simple write-based DBA operation (insert, update, delete) using that class entity we made before. To do ```insert``` write-based operation, we can do just like this:
+Now, our ```User``` entity class was done. Next, we will do simple write-based DBA operation (```insert```, ```update```, ```delete```) using that class entity we made before. To do ```insert``` write-based operation, we can do just like this:
 
 ```
 <?php
@@ -154,4 +154,33 @@ class UserController extends AbstractController
 		return $response;
 	}
 }
+```
+
+To do ```update``` write-based operation. we can do just like this:
+
+```
+	// Script continued from above..
+	public function update(Request $request, Response $response, array $args): Response
+	{
+		// get entity manager object.
+		$entity = $this->getEntity();
+		// get 'User' entity class object if desired
+		// target found. otherwise you'll get a 'null'.
+		$user = $entity->getRepository(User::class)
+			->find($args['id']);
+
+		if ($user === null) {
+			// do something to handle something (some throwed exception maybe..)
+		}
+
+		// set 'name' field using method 'setName'
+		$user->setName('foobar');
+		// set 'email' field using method 'setEmail'
+		$user->setEmail('foo@example.com');
+
+		// persist existing '$user' into real entity.
+		$entity->save($user);
+		// return instance of \Psr\Http\Message\ResponseInterface
+		return $response;
+	}
 ```
