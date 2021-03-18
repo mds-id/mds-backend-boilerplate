@@ -153,7 +153,6 @@ class UserController extends AbstractController
 		// return instance of \Psr\Http\Message\ResponseInterface
 		return $response;
 	}
-}
 ```
 
 To do ```update``` write-based operation, we can do just like this:
@@ -207,4 +206,5 @@ To do ```delete``` write-based operation, we can do just like this:
 		// return instance of \Psr\Http\Message\ResponseInterface
 		return $response;
 	}
+} /* EOF */
 ```
