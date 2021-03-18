@@ -163,7 +163,7 @@ class Entity implements EntityInterface
 			->createSimpleInflector();
 
 		foreach ($this->getModelClassProperties($model) as $name) {
-			$normalized          = $inflector->camelize($name);
+			$normalized          = $inflector->snakeize($name);
 			$result[$normalized] = $this->modelPropertyAccessor(
 				$model,
 				$name,

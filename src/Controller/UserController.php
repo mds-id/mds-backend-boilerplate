@@ -16,8 +16,8 @@ class UserController extends AbstractController
 		$entity = $this->getEntity();
 		$user   = new User();
 
-		$user->setName('foo #2');
-		$user->setEmail('foo@example.com');
+		$user->setName('rofiki');
+		$user->setEmail('rofiki@gmail.com');
 
 		$entity->persist($user);
 		return $response;

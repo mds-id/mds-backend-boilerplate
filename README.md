@@ -1,1 +1,1 @@
-### REST API centric microframework based on Slim for mds.id organization.
+### REST API centric microframework for MDS organization.
