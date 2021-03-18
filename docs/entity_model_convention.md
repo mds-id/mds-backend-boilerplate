@@ -156,7 +156,7 @@ class UserController extends AbstractController
 }
 ```
 
-To do ```update``` write-based operation. we can do just like this:
+To do ```update``` write-based operation, we can do just like this:
 
 ```
 	// Script continued from above..
@@ -170,7 +170,7 @@ To do ```update``` write-based operation. we can do just like this:
 			->find($args['id']);
 
 		if ($user === null) {
-			// do something to handle something (some throwed exception maybe..)
+			// do something to handle fault (some throwed exception maybe..)
 		}
 
 		// set 'name' field using method 'setName'
@@ -180,6 +180,30 @@ To do ```update``` write-based operation. we can do just like this:
 
 		// persist existing '$user' into real entity.
 		$entity->save($user);
+		// return instance of \Psr\Http\Message\ResponseInterface
+		return $response;
+	}
+```
+
+To do ```delete``` write-based operation, we can do just like this:
+
+```
+	// Script continued from above..
+	public function delete(Request $request, Response $response, array $args): Response
+	{
+		// get entity manager object.
+		$entity = $this->getEntity();
+		// get 'User' entity class object if desired
+		// target form given 'id' found. otherwise you'll get a 'null'.
+		$user = $entity->getRepository(User::class)
+			->find($args['id']);
+
+		if ($user === null) {
+			// do something to handle fault (some throwed exception maybe..)
+		}
+
+		// remove existing '$user' from real entity.
+		$entity->remove($user);
 		// return instance of \Psr\Http\Message\ResponseInterface
 		return $response;
 	}
