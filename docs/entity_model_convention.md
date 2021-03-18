@@ -165,7 +165,7 @@ To do ```update``` write-based operation. we can do just like this:
 		// get entity manager object.
 		$entity = $this->getEntity();
 		// get 'User' entity class object if desired
-		// target found. otherwise you'll get a 'null'.
+		// target from given 'id' found. otherwise you'll get a 'null'.
 		$user = $entity->getRepository(User::class)
 			->find($args['id']);
 
