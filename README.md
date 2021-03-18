@@ -1,1 +1,1 @@
-### MDS backend framework boilerplate.
+### REST API centric microframework based on Slim for mds.id organization.
