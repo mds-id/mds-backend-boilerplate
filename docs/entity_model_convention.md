@@ -268,3 +268,5 @@ This is for 'get by associated primary key':
 		);
 	}
 ```
+
+And there you have it. Entity model writing convention in a nutshell.
