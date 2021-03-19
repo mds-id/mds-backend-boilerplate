@@ -19,11 +19,11 @@ We have an ```id``` field which its attribute is ```auto_increment, int, not nul
 
 declare(strict_types=1);
 
-namespace Bluepeer\Entity;
+namespace Modspace\Entity;
 
-use Bluepeer\Core\Model\Model;
-use Bluepeer\Core\Repository\RepositoryInterface;
-use Bluepeer\Repository\UserRepository;
+use Modspace\Core\Model\Model;
+use Modspace\Core\Repository\RepositoryInterface;
+use Modspace\Repository\UserRepository;
 
 class User extends Model
 {
@@ -127,10 +127,10 @@ Now, our ```User``` entity class was done. Next, we will do simple write-based D
 
 declare(strict_types=1);
 
-namespace Bluepeer\Controller;
+namespace Modspace\Controller;
 
-use Bluepeer\Entity\User;
-use Bluepeer\Core\Controller\AbstractController;
+use Modspace\Entity\User;
+use Modspace\Core\Controller\AbstractController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\RequestInterface as Request;
 
@@ -216,9 +216,9 @@ Meanwhile, to do ```select``` read-based operation, we need a repository class b
 
 declare(strict_types=1);
 
-namespace Bluepeer\Repository;
+namespace Modspace\Repository;
 
-use Bluepeer\Core\Repository\EntityRepository;
+use Modspace\Core\Repository\EntityRepository;
 
 class UserRepository extends EntityRepository
 {

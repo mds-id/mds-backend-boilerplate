@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Bluepeer\Core\Dbal;
+namespace Modspace\Core\Dbal;
 
 use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionProperty;
-use Bluepeer\Core\Inflector\InflectorFactoryInterface;
-use Bluepeer\Core\Model\ModelInterface;
-use Bluepeer\Core\Repository\RepositoryInterface;
+use Modspace\Core\Inflector\InflectorFactoryInterface;
+use Modspace\Core\Model\ModelInterface;
+use Modspace\Core\Repository\RepositoryInterface;
 use Doctrine\DBAL\Connection;
 
 use function ucfirst;
@@ -25,13 +25,13 @@ class Entity implements EntityInterface
 	private $connection;
 
 	/**
-	 * @var \Bluepeer\Core\Inflector\InflectorFactoryInterface
+	 * @var \Modspace\Core\Inflector\InflectorFactoryInterface
 	 */
 	private $inflectorFactory;
 
 	/**
 	 * @param \Doctrine\DBAL\Connection $connection
-	 * @param \Bluepeer\Core\Inflector\InflectorFactoryInterface $inflectorFactory
+	 * @param \Modspace\Core\Inflector\InflectorFactoryInterface $inflectorFactory
 	 * @return static
 	 */
 	public function __construct(

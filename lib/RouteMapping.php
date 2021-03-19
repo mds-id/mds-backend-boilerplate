@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Bluepeer\Core;
+namespace Modspace\Core;
 
 use InvalidArgumentException;
-use Bluepeer\Core\Controller\AbstractController;
+use Modspace\Core\Controller\AbstractController;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\RouteInterface;
@@ -17,7 +17,7 @@ use Slim\Routing\RouteCollectorProxy;
 class RouteMapping implements RouteMappingInterface
 {
 	/**
-	 * @var Bluepeer\Core\KernelInterface
+	 * @var Modspace\Core\KernelInterface
 	 */
 	private $kernel;
 
@@ -32,7 +32,7 @@ class RouteMapping implements RouteMappingInterface
 	private $routeGroup;
 
 	/**
-	 * @param \Bluepeer\Core\KernelInterface $kernel
+	 * @param \Modspace\Core\KernelInterface $kernel
 	 * @return static
 	 */
 	public function __construct(KernelInterface $kernel)

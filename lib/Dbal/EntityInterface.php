@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Bluepeer\Core\Dbal;
+namespace Modspace\Core\Dbal;
 
-use Bluepeer\Core\Inflector\InflectorFactoryInterface;
-use Bluepeer\Core\Model\ModelInterface;
-use Bluepeer\Core\Repository\RepositoryInterface;
+use Modspace\Core\Inflector\InflectorFactoryInterface;
+use Modspace\Core\Model\ModelInterface;
+use Modspace\Core\Repository\RepositoryInterface;
 use Doctrine\DBAL\Connection;
 
 /**
@@ -42,14 +42,14 @@ interface EntityInterface
 	/**
 	 * Get inflector factory class object.
 	 *
-	 * @return \Bluepeer\Core\Inflector\InflectorFactoryInterface
+	 * @return \Modspace\Core\Inflector\InflectorFactoryInterface
 	 */
 	public function getInflectorFactory(): InflectorFactoryInterface;
 
 	/**
 	 * Set inflector factory class object.
 	 *
-	 * @param \Bluepeer\Core\Inflector\InflectorFactoryInterface $factory
+	 * @param \Modspace\Core\Inflector\InflectorFactoryInterface $factory
 	 * @return void
 	 */
 	public function setInflectorFactory(InflectorFactoryInterface $factory);
@@ -57,7 +57,7 @@ interface EntityInterface
 	/**
 	 * Persist model object into database.
 	 *
-	 * @param \Bluepeer\Core\Model\ModelInterface $model
+	 * @param \Modspace\Core\Model\ModelInterface $model
 	 * @return void
 	 */
 	public function persist(ModelInterface $model);
@@ -66,7 +66,7 @@ interface EntityInterface
 	 * Persist existing fetched single model class
 	 * object into database.
 	 *
-	 * @param \Bluepeer\Core\Model\ModelInterface $model
+	 * @param \Modspace\Core\Model\ModelInterface $model
 	 * @return void
 	 */
 	public function save(ModelInterface $model);
@@ -75,7 +75,7 @@ interface EntityInterface
 	 * Remove existing fetched single model class
 	 * object from database.
 	 *
-	 * @param \Bluepeer\Core\Model\ModelInterface $model
+	 * @param \Modspace\Core\Model\ModelInterface $model
 	 * @return void
 	 */
 	public function remove(ModelInterface $model);
@@ -85,14 +85,14 @@ interface EntityInterface
 	 * model class.
 	 *
 	 * @param string $model
-	 * @return \Bluepeer\Core\Repository\RepositoryInterface
+	 * @return \Modspace\Core\Repository\RepositoryInterface
 	 */
 	public function getRepository(string $model): RepositoryInterface;
 
 	/**
 	 * Get model class object properties.
 	 *
-	 * @param \Bluepeer\Core\Model\ModelInterface $model
+	 * @param \Modspace\Core\Model\ModelInterface $model
 	 * @return array
 	 */
 	public function getModelClassProperties(ModelInterface $model): array;
@@ -100,7 +100,7 @@ interface EntityInterface
 	/**
 	 * Access model class object property.
 	 *
-	 * @var \Bluepeer\Core\Model\ModelInterface $model
+	 * @var \Modspace\Core\Model\ModelInterface $model
 	 * @var string $name
 	 * @var int $op
 	 * @var $data mixed|null

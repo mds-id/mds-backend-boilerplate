@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Bluepeer\Core\Controller;
+namespace Modspace\Core\Controller;
 
 use Throwable;
-use Bluepeer\Core\ContainerAwareInterface;
-use Bluepeer\Core\Dbal\EntityInterface;
+use Modspace\Core\ContainerAwareInterface;
+use Modspace\Core\Dbal\EntityInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -43,7 +43,7 @@ abstract class AbstractController implements ContainerAwareInterface
 	/**
 	 * Get entity class object.
 	 *
-	 * @return \Bluepeer\Core\Dbal\EntityInterface
+	 * @return \Modspace\Core\Dbal\EntityInterface
 	 */
 	public function getEntity(): EntityInterface
 	{

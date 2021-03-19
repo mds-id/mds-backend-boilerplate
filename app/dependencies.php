@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Bluepeer\Core\Dbal\Entity;
-use Bluepeer\Core\Dbal\EntityInterface;
-use Bluepeer\Core\Inflector\InflectorFactory;
-use Bluepeer\Core\Inflector\InflectorFactoryInterface;
+use Modspace\Core\Dbal\Entity;
+use Modspace\Core\Dbal\EntityInterface;
+use Modspace\Core\Inflector\InflectorFactory;
+use Modspace\Core\Inflector\InflectorFactoryInterface;
 use DI\ContainerBuilder;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;

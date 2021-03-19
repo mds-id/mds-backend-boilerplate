@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-use Bluepeer\Core\Kernel;
-use Bluepeer\Core\RouteMapping;
+use Modspace\Core\Kernel;
+use Modspace\Core\RouteMapping;
 use DI\ContainerBuilder;
 use Slim\ResponseEmitter;
 use Slim\Factory\AppFactory;

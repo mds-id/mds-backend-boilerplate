@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Bluepeer\Core\Repository;
+namespace Modspace\Core\Repository;
 
-use Bluepeer\Core\Dbal\EntityInterface;
-use Bluepeer\Core\Model\ModelInterface;
+use Modspace\Core\Dbal\EntityInterface;
+use Modspace\Core\Model\ModelInterface;
 
 /**
  * @author Paulus Gandung Prakosa <rvn.plvhx@gmail.com>
@@ -15,14 +15,14 @@ interface RepositoryInterface
 	/**
 	 * Get entity class object.
 	 *
-	 * @return \Bluepeer\Core\Dbal\EntityInterface
+	 * @return \Modspace\Core\Dbal\EntityInterface
 	 */
 	public function getEntity(): EntityInterface;
 
 	/**
 	 * Set entity class object.
 	 *
-	 * @var \Bluepeer\Core\Dbal\EntityInterface $entity
+	 * @var \Modspace\Core\Dbal\EntityInterface $entity
 	 * @return void
 	 */
 	public function setEntity(EntityInterface $entity);
@@ -30,14 +30,14 @@ interface RepositoryInterface
 	/**
 	 * Get model class object.
 	 *
-	 * @return \Bluepeer\Core\Model\ModelInterface
+	 * @return \Modspace\Core\Model\ModelInterface
 	 */
 	public function getModel(): ModelInterface;
 
 	/**
 	 * Set model class object.
 	 *
-	 * @var \Bluepeer\Core\Model\ModelInterface $model
+	 * @var \Modspace\Core\Model\ModelInterface $model
 	 * @return void
 	 */
 	public function setModel(ModelInterface $model);
@@ -61,7 +61,7 @@ interface RepositoryInterface
 	 * Get entry from associated entity by it's primary key
 	 * value and deserialize it into model class object.
 	 *
-	 * @return \Bluepeer\Core\Model\ModelInterface|null
+	 * @return \Modspace\Core\Model\ModelInterface|null
 	 */
 	public function find($id);
 }

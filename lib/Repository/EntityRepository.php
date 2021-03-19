@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Bluepeer\Core\Repository;
+namespace Modspace\Core\Repository;
 
-use Bluepeer\Core\Dbal\EntityInterface;
-use Bluepeer\Core\Model\ModelInterface;
+use Modspace\Core\Dbal\EntityInterface;
+use Modspace\Core\Model\ModelInterface;
 use Doctrine\DBAL\Query\QueryBuilder;
 
 use function sprintf;
@@ -17,18 +17,18 @@ use function ucfirst;
 abstract class EntityRepository implements RepositoryInterface
 {
 	/**
-	 * @var \Bluepeer\Core\Dbal\EntityInterface
+	 * @var \Modspace\Core\Dbal\EntityInterface
 	 */
 	private $entity;
 
 	/**
-	 * @var \Bluepeer\Core\Model\ModelInterface
+	 * @var \Modspace\Core\Model\ModelInterface
 	 */
 	private $model;
 
 	/**
-	 * @var \Bluepeer\Core\Dbal\EntityInterface $entity
-	 * @var \Bluepeer\Core\Model\ModelInterface $model
+	 * @var \Modspace\Core\Dbal\EntityInterface $entity
+	 * @var \Modspace\Core\Model\ModelInterface $model
 	 * @return static
 	 */
 	public function __construct(EntityInterface $entity, ModelInterface $model)

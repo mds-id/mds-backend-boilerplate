@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bluepeer\Core\Inflector;
+namespace Modspace\Core\Inflector;
 
 /**
  * @author Paulus Gandung Prakosa <rvn.plvhx@gmail.com>

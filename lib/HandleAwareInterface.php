@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bluepeer\Core;
+namespace Modspace\Core;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

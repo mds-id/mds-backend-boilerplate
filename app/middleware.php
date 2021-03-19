@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bluepeer\Core\KernelInterface;
+use Modspace\Core\KernelInterface;
 
 return function (KernelInterface $kernel) {
 };

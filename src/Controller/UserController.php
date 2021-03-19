@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Bluepeer\Controller;
+namespace Modspace\Controller;
 
-use Bluepeer\Entity\User;
-use Bluepeer\Core\Controller\AbstractController;
+use Modspace\Entity\User;
+use Modspace\Core\Controller\AbstractController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\RequestInterface as Request;
 

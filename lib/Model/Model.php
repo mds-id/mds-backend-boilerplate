@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Bluepeer\Core\Model;
+namespace Modspace\Core\Model;
 
-use Bluepeer\Core\Repository\RepositoryInterface;
+use Modspace\Core\Repository\RepositoryInterface;
 
 /**
  * @author Paulus Gandung Prakosa <rvn.plvhx@gmail.com>

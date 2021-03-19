@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Bluepeer\Entity;
+namespace Modspace\Entity;
 
-use Bluepeer\Core\Model\Model;
-use Bluepeer\Core\Repository\RepositoryInterface;
-use Bluepeer\Repository\UserRepository;
+use Modspace\Core\Model\Model;
+use Modspace\Core\Repository\RepositoryInterface;
+use Modspace\Repository\UserRepository;
 
 class User extends Model
 {

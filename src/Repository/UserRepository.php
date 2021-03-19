@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Bluepeer\Repository;
+namespace Modspace\Repository;
 
-use Bluepeer\Core\Repository\EntityRepository;
+use Modspace\Core\Repository\EntityRepository;
 
 class UserRepository extends EntityRepository
 {

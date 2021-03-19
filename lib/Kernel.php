@@ -1,6 +1,6 @@
 <?php
 
-namespace Bluepeer\Core;
+namespace Modspace\Core;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
