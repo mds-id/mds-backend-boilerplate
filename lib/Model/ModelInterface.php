@@ -47,4 +47,18 @@ interface ModelInterface
 	 * @return string
 	 */
 	public function getPrimaryKey(): string;
+
+	/**
+	 * Get entity class relation metadata.
+	 *
+	 * @return array
+	 */
+	public function getRelationMetadata(): array;
+
+	/**
+	 * Get entity class relation type.
+	 *
+	 * @return int
+	 */
+	public function getRelationType(): int;
 }

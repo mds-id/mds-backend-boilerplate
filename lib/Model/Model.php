@@ -68,6 +68,20 @@ abstract class Model implements ModelInterface
 	abstract public function getPrimaryKey(): string;
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public function getRelationMetadata(): array
+	{
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRelationType(): int
+	{
+	}
+
+	/**
 	 * Get default table name.
 	 *
 	 * @return string
