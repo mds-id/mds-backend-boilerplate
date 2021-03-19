@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Bluepeer\Core\Controller;
 
+use Throwable;
 use Bluepeer\Core\ContainerAwareInterface;
 use Bluepeer\Core\Dbal\EntityInterface;
+use Fig\Http\Message\StatusCodeInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -51,12 +53,42 @@ abstract class AbstractController implements ContainerAwareInterface
 	/**
 	 * @param \Psr\Http\Message\ResponseInterface $response
 	 * @param array $data
+	 * @param int $code
 	 * @return \Psr\Http\Message\ResponseInterface
 	 */
-	public function asJson(ResponseInterface $response, array $data): ResponseInterface
-	{
+	public function asJson(
+		ResponseInterface $response,
+		array $data,
+		int $code = StatusCodeInterface::STATUS_OK
+	): ResponseInterface {
 		$response = $response->withHeader('Content-Type', 'application/json');
-		$response->getBody()->write(json_encode($data));
-		return $response;
+		$response
+			->getBody()
+			->write(json_encode($data));
+		return $response->withStatus($code);
+	}
+
+	/**
+	 * Handle throwed exception as JSON response.
+	 *
+	 * @param \Psr\Http\Message\ResponseInterface $response
+	 * @param \Throwable $e
+	 * @param int $code
+	 * @return \Psr\Http\Message\ResponseInterface
+	 */
+	public function handleThrowedException(
+		ResponseInterface $response,
+		Throwable $e,
+		int $code = StatusCodeInterface::STATUS_BAD_REQUEST
+	): ResponseInterface {
+		$fault = [
+			'message' => $e->getMessage(),
+			'code'    => $e->getCode(),
+			'file'    => $e->getFile(),
+			'line'    => $e->getLine(),
+			'trace'   => $e->getTrace()
+		];
+
+		return $this->asJson($response, $fault, $code);
 	}
 }
