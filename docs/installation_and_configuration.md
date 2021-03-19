@@ -12,4 +12,4 @@ composer create-project mds-id/framework [app-name]
 
 #### Database configuration
 
-Configuration file for database are exists in ```config/database.yaml```. Supports several database drivers. Visit - (doctrine/dbal)[https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html#connecting-using-a-url] for list of available database drivers.
+Configuration file for database are exists in ```config/database.yaml```. Supports several database drivers. Visit [doctrine/dbal](https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html#connecting-using-a-url) for list of available database drivers.
