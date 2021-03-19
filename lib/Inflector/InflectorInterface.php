@@ -10,6 +10,14 @@ namespace Modspace\Core\Inflector;
 interface InflectorInterface
 {
 	/**
+	 * Convert given string into camel-case form.
+	 *
+	 * @param string $str
+	 * @return string
+	 */
+	public function camelize(string $str): string;
+
+	/**
 	 * Convert given string into snake-case form.
 	 *
 	 * @param string $str

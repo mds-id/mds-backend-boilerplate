@@ -20,6 +20,7 @@ class UserController extends AbstractController
 		$user->setEmail('rofiki@gmail.com');
 
 		$entity->persist($user);
+		dump($user);
 		return $response;
 	}
 

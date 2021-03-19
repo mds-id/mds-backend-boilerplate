@@ -134,6 +134,6 @@ class Catalog extends Model
 	 */
 	protected function getDefaultRepository(): string
 	{
-		return CategoryRepository::class;
+		return CatalogRepository::class;
 	}
 }

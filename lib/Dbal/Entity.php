@@ -7,6 +7,7 @@ namespace Modspace\Core\Dbal;
 use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionProperty;
+use Throwable;
 use Modspace\Core\Inflector\InflectorFactoryInterface;
 use Modspace\Core\Model\ModelInterface;
 use Modspace\Core\Repository\RepositoryInterface;
@@ -94,7 +95,18 @@ class Entity implements EntityInterface
 			$queryBuilder = $queryBuilder->setParameter($key, $value);
 		}
 
-		$queryBuilder->execute();
+		try {
+			$queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
+
+		$this->modelPropertyAccessor(
+			$model,
+			$model->getPrimaryKey(),
+			EntityInterface::MODEL_PROPERTY_ACCESS_WRITE,
+			$this->getConnection()->lastInsertId()
+		);
 	}
 
 	/**
@@ -124,7 +136,11 @@ class Entity implements EntityInterface
 				call_user_func([$model, sprintf('get%s', $normalized)])
 			);
 
-		$queryBuilder->execute();
+		try {
+			$queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
 	}
 
 	/**
@@ -151,7 +167,11 @@ class Entity implements EntityInterface
 			->where(sprintf('%s = ?', $primaryKey))
 			->setParameter(0, $pval);
 
-		$queryBuilder->execute();
+		try {
+			$queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
 	}
 
 	/**

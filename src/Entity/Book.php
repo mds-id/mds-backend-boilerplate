@@ -89,7 +89,7 @@ class Book extends Model
 	 */
 	public function getRelationMetadata(): array
 	{
-		return [Catalog::class, 'id', 'category_id'];
+		return [Catalog::class, 'id', 'catalog_id'];
 	}
 
 	/**
