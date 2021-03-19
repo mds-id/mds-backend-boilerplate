@@ -208,3 +208,19 @@ To do ```delete``` write-based operation, we can do just like this:
 	}
 } /* EOF */
 ```
+
+Meanwhile, to do ```select``` read-based operation, we need a repository class based on current defined entity class named ```User```. The repository class should be like this:
+
+```
+<?php
+
+declare(strict_types=1);
+
+namespace Bluepeer\Repository;
+
+use Bluepeer\Core\Repository\EntityRepository;
+
+class UserRepository extends EntityRepository
+{
+} /* EOF */
+```
