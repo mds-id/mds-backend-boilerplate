@@ -224,3 +224,47 @@ class UserRepository extends EntityRepository
 {
 } /* EOF */
 ```
+
+Our class repository was done. Next, we can write logic for our read operation. This case below is for 'get all records':
+
+```
+	public function getAll(Request $request, Response $response, array $args): Response
+	{
+		$users = $this->getEntity()
+			->getRepository(User::class)
+			->findAll();
+		$result = [];
+
+		foreach ($users as $user) {
+			$result[] = [
+				'id' => $user->getId(),
+				'name' => $user->getName(),
+				'email' => $user->getEmail()
+			];
+		}
+
+		return $this->asJson($response, $result);
+	}
+```
+
+This is for 'get by associated primary key':
+
+```
+	public function getById(Request $request, Response $response, array $args): Response
+	{
+		$user = $this->getEntity()
+			->getRepository(User::class)
+			->find($args['id']);
+
+		return $this->asJson(
+			$response,
+			$user === null
+				? []
+				: [
+					'id' => $user->getId(),
+					'name' => $user->getName(),
+					'email' => $user->getEmail()
+				]
+		);
+	}
+```
