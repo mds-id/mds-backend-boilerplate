@@ -2,16 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Modspace\Core\Dbal\Common\Collections;
+namespace Modspace\Core\Common\Collections;
 
 use ArrayIterator;
 use Traversable;
 
-use function is_string;
-use function is_object;
-use function is_int;
-use function is_double;
-use function serialize;
 use function sizeof;
 
 /**

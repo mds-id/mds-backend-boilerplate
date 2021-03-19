@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modspace\Core\Dbal\Common\Collections;
+namespace Modspace\Core\Common\Collections;
 
 use ArrayAccess;
 use Countable;
