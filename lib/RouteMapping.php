@@ -9,6 +9,7 @@ use Bluepeer\Core\Controller\AbstractController;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\RouteInterface;
+use Slim\Routing\RouteCollectorProxy;
 
 /**
  * @author Paulus Gandung Prakosa <rvn.plvhx@gmail.com>
@@ -19,6 +20,16 @@ class RouteMapping implements RouteMappingInterface
 	 * @var Bluepeer\Core\KernelInterface
 	 */
 	private $kernel;
+
+	/**
+	 * @var boolean
+	 */
+	private $grouped = false;
+
+	/**
+	 * @var string
+	 */
+	private $routeGroup;
 
 	/**
 	 * @param \Bluepeer\Core\KernelInterface $kernel
@@ -96,6 +107,10 @@ class RouteMapping implements RouteMappingInterface
 	{
 		$this->checkCallableRequirements($callable);
 
+		if ($this->isGrouped()) {
+			$pattern = $this->getRouteGroup() . $pattern;
+		}
+
 		return $this->kernel
 			->getHandler()
 			->map(
@@ -103,6 +118,51 @@ class RouteMapping implements RouteMappingInterface
 				$pattern,
 				[$this->kernel->get($callable[0]), $callable[1]]
 			);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function group(string $pattern, $callable)
+	{
+		$this->useGroup(true);
+		$this->setRouteGroup($pattern);
+
+		$callable($this);
+
+		$this->useGroup(false);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function useGroup(bool $grouped)
+	{
+		$this->grouped = $grouped;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isGrouped(): bool
+	{
+		return $this->grouped;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRouteGroup(): string
+	{
+		return $this->routeGroup;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setRouteGroup(string $route)
+	{
+		$this->routeGroup = $route;
 	}
 
 	/**

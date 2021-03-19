@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Bluepeer\Core;
 
+use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Interfaces\RouteInterface;
+use Slim\Interfaces\RouteGroupInterface;
 
 /**
  * @author Paulus Gandung Prakosa <rvn.plvhx@gmail.com>
@@ -84,4 +86,37 @@ interface RouteMappingInterface extends HandleAwareInterface
 	 * @return \Slim\Interfaces\RouteInterface
 	 */
 	public function map(array $methods, string $pattern, array $callable): RouteInterface;
+
+	/**
+	 * @param string $pattern
+	 * @param array|\Closure $callable
+	 * @return void
+	 */
+	public function group(string $pattern, $callable);
+
+	/**
+	 * @param bool $grouped
+	 * @return void
+	 */
+	public function useGroup(bool $grouped);
+
+	/**
+	 * @return bool
+	 */
+	public function isGrouped(): bool;
+
+	/**
+	 * Get route group.
+	 *
+	 * @return string
+	 */
+	public function getRouteGroup(): string;
+
+	/**
+	 * Set route group.
+	 *
+	 * @param string $route
+	 * @return void
+	 */
+	public function setRouteGroup(string $route);
 }
