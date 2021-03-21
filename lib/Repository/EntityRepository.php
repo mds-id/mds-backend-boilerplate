@@ -84,6 +84,10 @@ abstract class EntityRepository implements RepositoryInterface
 	 */
 	public function findAll(): array
 	{
+		if ($this->hasRelation($this->getModel())) {
+			return $this->handleRelation($this->getModel());
+		}
+
 		$statement  = $this->getQueryBuilder()
 			->select('*')
 			->from($this->getModel()->getTable())
@@ -119,6 +123,10 @@ abstract class EntityRepository implements RepositoryInterface
 	 */
 	public function find($id)
 	{
+		if ($this->hasRelation($this->getModel())) {
+			return $this->handleRelation($this->getModel());
+		}
+	
 		$statement = $this->getQueryBuilder()
 			->select('*')
 			->from($this->getModel()->getTable())

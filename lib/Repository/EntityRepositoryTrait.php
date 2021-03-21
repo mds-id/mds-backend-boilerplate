@@ -36,6 +36,12 @@ trait EntityRepositoryTrait
 		return false;
 	}
 
+	/**
+	 * Validate relation type.
+	 *
+	 * @param int $relationType
+	 * @return bool
+	 */
 	private function validateRelationType(int $relationMode)
 	{
 		switch ($relationType) {
@@ -47,6 +53,24 @@ trait EntityRepositoryTrait
 		}
 
 		return false;
+	}
+
+	private function handleRelation(ModelInterface $model, $id = null)
+	{
+		if (!$this->hasRelation($model)) {
+			return null === $id ? [] : null;
+		}
+
+		switch ($model->getRelationType()) {
+			case RelationType::ONE_TO_ONE:
+				return $this->handleOneToOneRelation($model, $id);
+			case RelationType::ONE_TO_MANY:
+				return $this->handleOneToManyRelation($model, $id);
+			case RelationType::MANY_TO_ONE:
+				return $this->handleManyToOneRelation($model, $id);
+			case RelationType::MANY_TO_MANY:
+				return $this->handleManyToManyRelation($model, $id);
+		}
 	}
 
 	private function handleOneToOneRelation(ModelInterface $model, $id = null)
@@ -100,7 +124,7 @@ trait EntityRepositoryTrait
 			->select('*')
 			->from($model->getTable());
 
-		if ($id === null) {
+		if ($id !== null) {
 			$queryBuilder = $queryBuilder
 				->where(sprintf('%s = ?', $inflector->snakeize($model->getPrimaryKey())))
 				->setParamter(0, $id);
@@ -129,13 +153,83 @@ trait EntityRepositoryTrait
 
 	private function handleManyToOneRelation(ModelInterface $model, $id = null)
 	{
+		$quantizationMode = null === $id
+			? FetchQuantization::QUANTIZATION_SINGLE
+			: FetchQuantization::QUANTIZATION_MULTIPLE;
+		$inflector = $this->getEntity()
+			->getInflectorFactory()
+			->createSimpleInflector();
+		$queryBuilder = $this->getQueryBuilder()
+			->select('*')
+			->from($model->getTable());
+
+		if ($id !== null) {
+			$queryBuilder = $queryBuilder
+				->where(sprintf('%s = ?', $inflector->snakeize($model->getPrimaryKey())))
+				->setParameter(0, $id);
+		}
+
+		try {
+			$statement = $queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
+
+		$parent = $quantizationMode === FetchQuantization::QUANTIZATION_SINGLE
+			? $this->fetchQuantizationSingle($statement, $model)
+			: $this->fetchQuantizationMultiple($statement, $model);
+
+		if ($parent instanceof ModelInterface) {
+			return $this->relationResolver($parent, RelationType::MANY_TO_ONE);
+		}
+
+		array_walk($parent, function(&$val) {
+			$val = $this->relationResolver($val, RelationType::MANY_TO_ONE);
+		});
+
+		return $parent;
 	}
 
 	private function handleManyToManyRelation(ModelInterface $model, $id = null)
 	{
+		$quantizationMode = null === $id
+			? FetchQuantization::QUANTIZATION_SINGLE
+			: FetchQuantization::QUANTIZATION_MULTIPLE;
+		$inflector = $this->getEntity()
+			->getInflectorFactory()
+			->createSimpleInflector();
+		$queryBuilder = $this->getQueryBuilder()
+			->select('*')
+			->from($model->getTable());
+
+		if ($id !== null) {
+			$queryBuilder = $queryBuilder
+				->where(sprintf('%s = ?', $inflector->snakeize($model->getPrimaryKey())))
+				->setParameter(0, $id);
+		}
+
+		try {
+			$statement = $queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
+
+		$parent = $quantizationMode === FetchQuantization::QUANTIZATION_SINGLE
+			? $this->fetchQuantizationSingle($statement, $model)
+			: $this->fetchQuantizationMultiple($statement, $model);
+
+		if ($parent instanceof ModelInterface) {
+			return $this->relationResolver($parent, RelationType::MANY_TO_MANY);
+		}
+
+		array_walk($parent, function(&$val) {
+			$val = $this->relationResolver($val, RelationType::MANY_TO_MANY);
+		});
+
+		return $parent;
 	}
 
-	public function fetchQuantizationSingle(
+	private function fetchQuantizationSingle(
 		ResultStatement $statement,
 		ModelInterface $model
 	): ModelInterface {
@@ -162,7 +256,7 @@ trait EntityRepositoryTrait
 		return $resultObj;
 	}
 
-	public function fetchQuantizationMultiple(
+	private function fetchQuantizationMultiple(
 		ResultStatement $statement,
 		ModelInterface $model
 	): array {

@@ -15,5 +15,19 @@ return function (RouteMappingInterface $router) {
 		$router->post('/user', [UserController::class, 'create']);
 		$router->put('/user/{id}', [UserController::class, 'update']);
 		$router->delete('/user/{id}', [UserController::class, 'delete']);
+
+		$router->get('/book/catalog/{catalog_id}', [BookController::class, 'all']);
+		$router->get('/book/{book_id}/catalog/{catalog_id}', [
+			BookController::class,
+			'getById'
+		]);
+		$router->post('/book/catalog/{catalog_id}', [BookController::class, 'create']);
+		$router->put('/book/{book_id}/catalog/{catalog_id}', [
+			BookController::class, 'update'
+		]);
+		$router->delete('/book/{book_id}/catalog/{catalog_id}', [
+			BookController::class,
+			'delete'
+		]);
 	});
 };
