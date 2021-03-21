@@ -105,7 +105,7 @@ class Entity implements EntityInterface
 			$model,
 			$model->getPrimaryKey(),
 			EntityInterface::MODEL_PROPERTY_ACCESS_WRITE,
-			$this->getConnection()->lastInsertId()
+			intval($this->getConnection()->lastInsertId())
 		);
 	}
 

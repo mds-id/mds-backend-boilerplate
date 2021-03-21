@@ -87,9 +87,25 @@ class Book extends Model
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getRelationMetadata(): array
+	public function getRelationTargetClass(): string
 	{
-		return [Catalog::class, 'id', 'catalog_id'];
+		return Catalog::class;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRelationTargetPrimaryKey(): string
+	{
+		return 'id';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRelationBindObject(): string
+	{
+		return 'catalog';
 	}
 
 	/**
@@ -98,6 +114,14 @@ class Book extends Model
 	public function getRelationType(): int
 	{
 		return RelationType::MANY_TO_ONE;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getForeignKey(): string
+	{
+		return 'catalogId';
 	}
 
 	/**

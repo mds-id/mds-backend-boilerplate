@@ -65,9 +65,25 @@ abstract class Model implements ModelInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getRelationMetadata(): array
+	public function getRelationTargetClass(): string
 	{
-		return [];
+		return '';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRelationTargetPrimaryKey(): string
+	{
+		return '';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRelationBindObject(): string
+	{
+		return '';
 	}
 
 	/**

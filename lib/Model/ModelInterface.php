@@ -49,11 +49,26 @@ interface ModelInterface
 	public function getPrimaryKey(): string;
 
 	/**
-	 * Get entity class relation metadata.
+	 * Get relation target entity class.
 	 *
-	 * @return array
+	 * @return string
 	 */
-	public function getRelationMetadata(): array;
+	public function getRelationTargetClass(): string;
+
+	/**
+	 * Get relation target primary key constraint.
+	 *
+	 * @return string
+	 */
+	public function getRelationTargetPrimaryKey(): string;
+
+	/**
+	 * Get property name where relation object will
+	 * bounded to.
+	 *
+	 * @return string
+	 */
+	public function getRelationBindObject(): string;
 
 	/**
 	 * Get entity class relation type.

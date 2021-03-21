@@ -11,22 +11,9 @@ use Psr\Http\Message\RequestInterface as Request;
 
 class UserController extends AbstractController
 {
-	public function create(Request $request, Response $response, array $args): Response
+	public function all(Request $request, Response $response, array $args): Response
 	{
-		$entity = $this->getEntity();
-		$user   = new User();
-
-		$user->setName('rofiki');
-		$user->setEmail('rofiki@gmail.com');
-
-		$entity->persist($user);
-		dump($user);
-		return $response;
-	}
-
-	public function getAll(Request $request, Response $response, array $args): Response
-	{
-		$users  = $this->getEntity()
+		$users = $this->getEntity()
 			->getRepository(User::class)
 			->findAll();
 		$result = [];
@@ -44,52 +31,73 @@ class UserController extends AbstractController
 
 	public function getById(Request $request, Response $response, array $args): Response
 	{
-		$user = $this->getEntity()
-			->getRepository(User::class)
-			->find($args['id']);
+		return $response;
+	}
+
+	public function create(Request $request, Response $response, array $args): Response
+	{
+		$entity = $this->getEntity();
+		$user   = new User();
+
+		$user->setName('fitrah');
+		$user->setEmail('fitrah@gmail.com');
+
+		$entity->persist($user);
 
 		return $this->asJson(
 			$response,
-			$user == null
-				? []
-				: [
-					'id' => $user->getId(),
-					'name' => $user->getName(),
-					'email' => $user->getEmail()
-				]
+			[
+				'id' => $user->getId(),
+				'name' => $user->getName(),
+				'email' => $user->getEmail()
+			]
 		);
 	}
 
 	public function update(Request $request, Response $response, array $args): Response
 	{
-		$user = $this->getEntity()
-			->getRepository(User::class)
+		$entity = $this->getEntity();
+		$user = $entity->getRepository(User::class)
 			->find($args['id']);
 
-		if ($user === null) {
+		if (null === $user) {
 			return $this->asJson($response, []);
 		}
 
-		$user->setName('gandung');
-		$user->setEmail('gandung@php.net');
+		$user->setName('daus');
+		$user->setEmail('daus@example.com');
 
-		$entity = $this->getEntity();
 		$entity->save($user);
 
-		return $this->asJson($response, []);
+		return $this->asJson(
+			$response,
+			[
+				'id' => $user->getId(),
+				'name' => $user->getName(),
+				'email' => $user->getEmail()
+			]
+		);
 	}
 
 	public function delete(Request $request, Response $response, array $args): Response
 	{
 		$entity = $this->getEntity();
-		$user   = $entity->getRepository(User::class)
+		$user = $entity->getRepository(User::class)
 			->find($args['id']);
 
-		if ($user === null) {
+		if (null === $user) {
 			return $this->asJson($response, []);
 		}
 
-		$entity->remove($user);
-		return $this->asJson($response, []);
+		try {
+			$entity->remove($user);
+		} catch (Throwable $e) {
+			return $this->handleThrowedException($response, $e);
+		}
+
+		return $this->asJson(
+			$response,
+			[]
+		);
 	}
 }

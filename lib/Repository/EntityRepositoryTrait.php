@@ -180,11 +180,119 @@ trait EntityRepositoryTrait
 			case RelationType::MANY_TO_MANY:
 				return $this->manyToManyRelationResolver($model);
 		}
-
-		return null;
 	}
 
 	private function oneToOneRelationResolver(ModelInterface $model)
 	{
+		$relationTarget    = $model->getRelationTargetClass();
+		$relationTargetObj = new $relationTarget();
+		$inflector         = $this->getEntity()
+			->getInflectorFactory()
+			->createSimpleInflector();
+		$queryBuilder      = $this->getQueryBuilder()
+			->select(sprintf('%s.*', $model->getTable()[0]))
+			->from($model->getTable(), $model->getTable()[0])
+			->join(
+				$model->getTable()[0],
+				$relationTargetObj->getTable(),
+				$relationTargetObj->getTable()[0],
+				sprintf(
+					'%s.%s = %s.%s',
+					$relationTargetObj->getTable()[0],
+					$relationTargetObj->getForeignKey(),
+					$model->getTable()[0],
+					$model->getPrimaryKey()
+				)
+			)
+			->where(sprintf(
+				'%s.%s = ?',
+				$model->getTable()[0],
+				$model->getPrimaryKey()
+			))
+			->setParameter(
+				0,
+				call_user_func([
+					$model,
+					sprintf("get%s", $inflector->camelize($model->getPrimaryKey()))
+				])
+			);
+
+		try {
+			$statement = $queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
+
+		$relationTargetObj = $this->fetchQuantizationSingle(
+			$statement,
+			$relationTargetObj
+		);
+
+		$this->getEntity()
+			->modelPropertyAccessor(
+				$model,
+				$relationTargetObj->getRelationBindObject(),
+				EntityInterface::MODEL_PROPERTY_ACCESS_WRITE,
+				$relationTargetObj
+			);
+
+		return $model;
+	}
+
+	private function oneToManyRelationResolver(ModelInterface $model)
+	{
+		$relationTarget    = $model->getRelationTargetClass();
+		$relationTargetObj = new $relationTarget();
+		$inflector         = $this->getEntity()
+			->getInflectorFactory()
+			->createSimpleInflector();
+		$queryBuilder      = $this->getQueryBuilder()
+			->select(sprintf('%s.*', $model->getTable()[0]))
+			->from($model->getTable(), $model->getTable()[0])
+			->join(
+				$model->getTable()[0],
+				$relationTargetObj->getTable(),
+				$relationTargetObj->getTable()[0],
+				sprintf(
+					'%s.%s = %s.%s',
+					$relationTargetObj->getTable()[0],
+					$relationTargetObj->getPrimaryKey(),
+					$model->getTable()[0],
+					$model->getPrimaryKey()
+				)
+			)
+			->where(sprintf(
+				'%s.%s = ?',
+				$model->getTable()[0],
+				$model->getPrimaryKey()
+			))
+			->setParameter(
+				0,
+				call_user_func([
+					$model,
+					sprintf('get%s', $inflector->camelize($model->getPrimaryKey()))
+				])
+			);
+
+		try {
+			$statement = $queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
+
+		$relationTargetObjs = $this->fetchQuantizationMultiple(
+			$statement,
+			$relationTargetObj
+		);
+
+		$this->getEntity()
+			->modelPropertyAccessor(
+				$model,
+				$relationTargetObj->getRelationBindObject(),
+				EntityInterface::MODEL_PROPERTY_ACCESS_WRITE,
+				$relationTargetObjs
+			);
+
+		return $model;
 	}
 }
