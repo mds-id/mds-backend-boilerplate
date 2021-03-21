@@ -51,12 +51,10 @@ trait EntityRepositoryTrait
 
 	private function handleOneToOneRelation(ModelInterface $model, $id = null)
 	{
-		$relationMetadata = $model->getRelationMetadata();
 		$quantizationMode = null === $id
 			? FetchQuantization::QUANTIZATION_SINGLE
 			: FetchQuantization::QUANTIZATION_MULTIPLE;
-
-		$inflector    = $this->getEntity()
+		$inflector = $this->getEntity()
 			->getInflectorFactory()
 			->createSimpleInflector();
 		$queryBuilder = $this->getQueryBuilder()
@@ -88,6 +86,53 @@ trait EntityRepositoryTrait
 		});
 
 		return $parent;
+	}
+
+	private function handleOneToManyRelation(ModelInterface $model, $id = null)
+	{
+		$quantizationMode = null === $id
+			? FetchQuantization::QUANTIZATION_SINGLE
+			: FetchQuantization::QUANTIZATION_MULTIPLE;
+		$inflector = $this->getEntity()
+			->getInflectorFactory()
+			->createSimpleInflector();
+		$queryBuilder = $this->getQueryBuilder()
+			->select('*')
+			->from($model->getTable());
+
+		if ($id === null) {
+			$queryBuilder = $queryBuilder
+				->where(sprintf('%s = ?', $inflector->snakeize($model->getPrimaryKey())))
+				->setParamter(0, $id);
+		}
+
+		try {
+			$statement = $queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
+
+		$parent = $quantizationMode === FetchQuantization::QUANTIZATION_SINGLE
+			? $this->fetchQuantizationSingle($statement, $model)
+			: $this->fetchQuantizationMultiple($statement, $model);
+
+		if ($parent instanceof ModelInterface) {
+			return $this->relationResolver($parent, RelationType::ONE_TO_MANY);
+		}
+
+		array_walk($parent, function(&$val) {
+			$val = $this->relationResolver($val, RelationType::ONE_TO_MANY);
+		});
+
+		return $parent;
+	}
+
+	private function handleManyToOneRelation(ModelInterface $model, $id = null)
+	{
+	}
+
+	private function handleManyToManyRelation(ModelInterface $model, $id = null)
+	{
 	}
 
 	public function fetchQuantizationSingle(
@@ -294,5 +339,15 @@ trait EntityRepositoryTrait
 			);
 
 		return $model;
+	}
+
+	private function manyToOneRelationResolver(ModelInterface $model)
+	{
+		return $this->oneToOneRelationResolver($model);
+	}
+
+	private function manyToManyRelationResolver(ModelInterface $model)
+	{
+		return $this->oneToManyRelationResolver($model);
 	}
 }
