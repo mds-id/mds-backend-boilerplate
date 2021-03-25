@@ -48,15 +48,15 @@ trait CollectionTrait
 	private function getKey($data)
 	{
 		if (is_array($data)) {
-			return $this->getSignatureFromString(serialize($data));
+			return $this->generateSignatureFromString(serialize($data));
 		}
 
 		if (is_object($data)) {
-			return $this->getSignatureFromObject($data);
+			return $this->generateSignatureFromObject($data);
 		}
 
 		if (is_string($data)) {
-			return $this->getSignatureFromString($data);
+			return $this->generateSignatureFromString($data);
 		}
 
 		if (is_int($data) || is_double($data)) {

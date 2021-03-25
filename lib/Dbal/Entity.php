@@ -160,6 +160,11 @@ class Entity implements EntityInterface
 	 */
 	public function remove(ModelInterface $model)
 	{
+		if ($this->hasRelation($model)) {
+			$this->handleRelationalRemove($model);
+			return;
+		}
+
 		$primaryKey = $model->getPrimaryKey();
 		$normalized = ucfirst($primaryKey);
 		$pval       = call_user_func([

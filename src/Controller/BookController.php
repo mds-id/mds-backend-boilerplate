@@ -151,5 +151,47 @@ class BookController extends AbstractController
 
 	public function delete(Request $request, Response $response, array $args): Response
 	{
+		$entity  = $this->getEntity();
+		$catalog = $entity->getRepository(Catalog::class)
+			->find($args['catalog_id']);
+
+		if (null === $catalog) {
+			return $this->handleThrowedException(
+				$response,
+				new ErrorException(
+					sprintf(
+						'Catalog with id \'%s\' not found.',
+						$args['catalog_id']
+					)
+				)
+			);
+		}
+
+		$book = $entity->getRepository(Book::class)
+			->find($args['book_id']);
+
+		if (null === $book) {
+			return $this->handleThrowedException(
+				$response,
+				new ErrorException(
+					sprintf(
+						'Book with id \'%s\' not found.',
+						$args['book_id']
+					)
+				)
+			);
+		}
+
+		$entity->remove($book);
+
+		return $this->asJson(
+			$response,
+			[
+				'message' => sprintf(
+					'Data with id \'%s\' deleted successfully.',
+					$book->getId()
+				)
+			]
+		);
 	}
 }

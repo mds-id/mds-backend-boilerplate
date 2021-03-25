@@ -23,7 +23,7 @@ class Catalog extends Model
 	private $catalogName;
 
 	/**
-	 * @var \Modspace\Entity\Book[]
+	 * @var \Modspace\Core\Common\Collections\ArrayCollection
 	 */
 	private $books;
 
@@ -80,6 +80,16 @@ class Catalog extends Model
 			$this->books->append($book);
 			$book->setCatalog($this);
 		}
+	}
+
+	/**
+	 * Get list of all books.
+	 *
+	 * @return \Modspace\Core\Common\Collections\ArrayCollection
+	 */
+	public function getBooks(): ArrayCollection
+	{
+		return $this->books;
 	}
 
 	/**

@@ -6,6 +6,7 @@ namespace Modspace\Core\Repository;
 
 use RuntimeException;
 use Doctrine\DBAL\Driver\ResultStatement;
+use Modspace\Core\Common\Collections\ArrayCollection;
 use Modspace\Core\Dbal\FetchQuantization;
 use Modspace\Core\Dbal\EntityInterface;
 use Modspace\Core\Model\ModelInterface;
@@ -343,9 +344,10 @@ trait EntityRepositoryTrait
 			->createSimpleInflector();
 		$properties = $this->getEntity()
 			->getModelClassProperties($model);
+		$resultObj  = clone $model;
 
 		while (($row = $statement->fetchAssociative()) !== false) {
-			$resultObj = clone $model;
+			$resultObj = clone $resultObj;
 
 			if ($model->getForeignKey() !== '') {
 				$normalized = $inflector->snakeize($model->getForeignKey());
@@ -533,12 +535,18 @@ trait EntityRepositoryTrait
 			$relationTargetObj
 		);
 
+		$normalizedResult = new ArrayCollection();
+
+		foreach ($relationTargetObjs as $elt) {
+			$normalizedResult->append($elt);
+		}
+
 		$this->getEntity()
 			->modelPropertyAccessor(
 				$model,
 				$model->getRelationBindObject(),
 				EntityInterface::MODEL_PROPERTY_ACCESS_WRITE,
-				$relationTargetObjs
+				$normalizedResult
 			);
 
 		return $model;

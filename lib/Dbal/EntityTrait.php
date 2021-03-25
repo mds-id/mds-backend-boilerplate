@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modspace\Core\Dbal;
 
+use RuntimeException;
 use Throwable;
 use Modspace\Core\Dbal\EntityInterface;
 use Modspace\Core\Model\ModelInterface;
@@ -221,6 +222,31 @@ trait EntityTrait
 
 	private function handleManyToOneRelationalRemove(ModelInterface $model)
 	{
+		$inflector  = $this->getInflectorFactory()
+			->createSimpleInflector();
+		$primaryKey = $inflector->snakeize($model->getPrimaryKey());
+		$primaryKeyValue = call_user_func([
+			$model,
+			sprintf('get%s', ucfirst($model->getPrimaryKey()))
+		]);
+
+		if (null === $primaryKeyValue) {
+			throw new RuntimeException(
+				'Primary key value must not be null.'
+			);
+		}
+
+		$queryBuilder = $this->getConnection()
+			->createQueryBuilder()
+			->delete($model->getTable())
+			->where(sprintf('%s = ?', $primaryKey))
+			->setParameter(0, $primaryKeyValue);
+
+		try {
+			$queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
 	}
 
 	private function handleManyToManyRelationalRemove(ModelInterface $model)

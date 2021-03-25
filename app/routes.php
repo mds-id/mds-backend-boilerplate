@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Modspace\Controller\BookController;
+use Modspace\Controller\CatalogController;
 use Modspace\Controller\UserController;
 use Modspace\Core\KernelInterface;
 use Modspace\Core\RouteMappingInterface;
@@ -30,5 +31,8 @@ return function (RouteMappingInterface $router) {
 			BookController::class,
 			'delete'
 		]);
+
+		$router->get('/catalog', [CatalogController::class, 'all']);
+		$router->get('/catalog/{catalog_id}', [CatalogController::class, 'getById']);
 	});
 };
