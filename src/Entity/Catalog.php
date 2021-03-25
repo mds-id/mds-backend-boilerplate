@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Modspace\Entity;
 
-use Modspace\Dbal\Common\Collections\ArrayCollection;
+use Modspace\Core\Common\Collections\ArrayCollection;
 use Modspace\Core\Model\Model;
 use Modspace\Core\Model\Relation\RelationType;
+use Modspace\Entity\Book;
 
 class Catalog extends Model
 {
@@ -30,6 +31,7 @@ class Catalog extends Model
 	 */
 	public function __construct()
 	{
+		parent::__construct();
 		$this->books = new ArrayCollection();
 	}
 
@@ -38,7 +40,7 @@ class Catalog extends Model
 	 *
 	 * @return int
 	 */
-	public function getId(): int
+	public function getId(): string
 	{
 		return $this->id;
 	}
@@ -108,9 +110,25 @@ class Catalog extends Model
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getRelationMetadata(): array
+	public function getRelationTargetClass(): string
 	{
-		return [Category::class, 'id'];
+		return Book::class;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRelationTargetPrimaryKey(): string
+	{
+		return 'id';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getRelationBindObject(): string
+	{
+		return 'books';
 	}
 
 	/**
@@ -126,7 +144,7 @@ class Catalog extends Model
 	 */
 	protected function getDefaultTable(): string
 	{
-		return 'category';
+		return 'catalog';
 	}
 
 	/**

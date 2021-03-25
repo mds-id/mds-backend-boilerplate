@@ -22,7 +22,7 @@ trait CollectionTrait
 	private function generateSignatureFromObject(object $obj)
 	{
 		return sprintf(
-			"%s||%s"
+			"%s||%s",
 			spl_object_hash($obj),
 			get_class($obj)
 		);

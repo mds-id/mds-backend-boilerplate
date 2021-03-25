@@ -230,7 +230,7 @@ class Entity implements EntityInterface
 		}
 
 		if ($gotException) {
-			throw InvalidArgumentException(
+			throw new InvalidArgumentException(
 				sprintf(
 					"Class property with name '%s' doesn't exist.",
 					$name

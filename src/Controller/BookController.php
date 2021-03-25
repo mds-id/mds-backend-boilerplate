@@ -34,6 +34,25 @@ class BookController extends AbstractController
 
 	public function getById(Request $request, Response $response, array $args): Response
 	{
+		$book = $this->getEntity()
+			->getRepository(Book::class)
+			->find($args['book_id']);
+
+		if ($book === null) {
+			return $this->asJson($response, []);
+		}
+
+		return $this->asJson(
+			$response,
+			[
+				'id' => $book->getId(),
+				'title' => $book->getTitle(),
+				'catalog' => [
+					'id' => $book->getCatalog()->getId(),
+					'catalog_name' => $book->getCatalog()->getCatalogName()
+				]
+			]
+		);
 	}
 
 	public function create(Request $request, Response $response, array $args): Response

@@ -16,6 +16,8 @@ use function ucfirst;
  */
 abstract class EntityRepository implements RepositoryInterface
 {
+	use EntityRepositoryTrait;
+
 	/**
 	 * @var \Modspace\Core\Dbal\EntityInterface
 	 */
@@ -25,6 +27,11 @@ abstract class EntityRepository implements RepositoryInterface
 	 * @var \Modspace\Core\Model\ModelInterface
 	 */
 	private $model;
+
+	/**
+	 * @var array
+	 */
+	private $savedForeignKeyValue = [];
 
 	/**
 	 * @var \Modspace\Core\Dbal\EntityInterface $entity
@@ -124,7 +131,7 @@ abstract class EntityRepository implements RepositoryInterface
 	public function find($id)
 	{
 		if ($this->hasRelation($this->getModel())) {
-			return $this->handleRelation($this->getModel());
+			return $this->handleRelation($this->getModel(), $id);
 		}
 	
 		$statement = $this->getQueryBuilder()

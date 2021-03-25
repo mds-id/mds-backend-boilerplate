@@ -97,6 +97,14 @@ abstract class Model implements ModelInterface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function getForeignKey(): string
+	{
+		return '';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	abstract public function getPrimaryKey(): string;
 
 	/**

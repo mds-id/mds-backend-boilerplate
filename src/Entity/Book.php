@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Modspace\Entity;
 
 use Modspace\Core\Model\Model;
-use Modspace\Core\Relation\RelationType;
+use Modspace\Core\Model\Relation\RelationType;
+use Modspace\Repository\BookRepository;
 
 class Book extends Model
 {
@@ -29,7 +30,7 @@ class Book extends Model
 	 *
 	 * @return int
 	 */
-	public function getId(): int
+	public function getId(): string
 	{
 		return $this->id;
 	}

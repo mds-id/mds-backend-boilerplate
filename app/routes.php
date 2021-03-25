@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Modspace\Controller\BookController;
 use Modspace\Controller\UserController;
 use Modspace\Core\KernelInterface;
 use Modspace\Core\RouteMappingInterface;
@@ -16,8 +17,8 @@ return function (RouteMappingInterface $router) {
 		$router->put('/user/{id}', [UserController::class, 'update']);
 		$router->delete('/user/{id}', [UserController::class, 'delete']);
 
-		$router->get('/book/catalog/{catalog_id}', [BookController::class, 'all']);
-		$router->get('/book/{book_id}/catalog/{catalog_id}', [
+		$router->get('/book', [BookController::class, 'all']);
+		$router->get('/book/{book_id}', [
 			BookController::class,
 			'getById'
 		]);

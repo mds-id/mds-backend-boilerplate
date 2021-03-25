@@ -42,6 +42,13 @@ interface ModelInterface
 	public function setRepository(string $repository);
 
 	/**
+	 * Get associated model's foreign key constraint.
+	 *
+	 * @return string
+	 */
+	public function getForeignKey(): string;
+
+	/**
 	 * Get associated model's primary key.
 	 *
 	 * @return string
