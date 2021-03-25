@@ -82,7 +82,7 @@ class Entity implements EntityInterface
 	 */
 	public function persist(ModelInterface $model)
 	{
-		if (!$this->hasRelation($model)) {
+		if ($this->hasRelation($model)) {
 			$this->handleRelationalPersist($model);
 			return;
 		}
@@ -121,6 +121,11 @@ class Entity implements EntityInterface
 	 */
 	public function save(ModelInterface $model)
 	{
+		if ($this->hasRelation($model)) {
+			$this->handleRelationalSave($model);
+			return;
+		}
+
 		$normalized   = $this->transformEntity($model);
 		$queryBuilder = $this->getConnection()
 			->createQueryBuilder()
@@ -190,6 +195,10 @@ class Entity implements EntityInterface
 			->createSimpleInflector();
 
 		foreach ($this->getModelClassProperties($model) as $name) {
+			if ($name === $model->getRelationBindObject()) {
+				continue;
+			}
+
 			$normalized          = $inflector->snakeize($name);
 			$result[$normalized] = $this->modelPropertyAccessor(
 				$model,

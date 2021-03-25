@@ -161,6 +161,10 @@ trait EntityRepositoryTrait
 			? $this->fetchQuantizationSingle($statement, $model)
 			: $this->fetchQuantizationMultiple($statement, $model);
 
+		if ($parent === null) {
+			return null;
+		}
+
 		if ($parent instanceof ModelInterface) {
 			return $this->relationResolver($parent, RelationType::ONE_TO_MANY);
 		}

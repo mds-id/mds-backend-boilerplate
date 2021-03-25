@@ -77,17 +77,76 @@ class BookController extends AbstractController
 
 		$payload = $this->getJson($request);
 
-		$user = new User();
-		$user->setTitle($payload['title']);
-		$user->setCatalog($catalog);
+		$book = new Book();
+		$book->setTitle($payload['title']);
+		$book->setCatalog($catalog);
 
-		$entity->persist($user);
+		$entity->persist($book);
 
-		return $response;
+		return $this->asJson(
+			$response,
+			[
+				'id' => $book->getId(),
+				'title' => $book->getTitle(),
+				'catalog' => [
+					'id' => $book->getCatalog()->getId(),
+					'catalog_name' => $book->getCatalog()->getCatalogName()
+				]
+			]
+		);
 	}
 
 	public function update(Request $request, Response $response, array $args): Response
 	{
+		$entity  = $this->getEntity();
+		$catalog = $entity->getRepository(Catalog::class)
+			->find($args['catalog_id']);
+
+		if (null === $catalog) {
+			return $this->handleThrowedException(
+				$response,
+				new ErrorException(
+					sprintf(
+						'Catalog with id \'%s\' not found.',
+						$args['catalog_id']
+					)
+				)
+			);
+		}
+
+		$book = $entity->getRepository(Book::class)
+			->find($args['book_id']);
+
+		if (null === $book) {
+			return $this->handleThrowedException(
+				$response,
+				new ErrorException(
+					sprintf(
+						'Book with id \'%s\' not found.',
+						$args['book_id']
+					)
+				)
+			);
+		}
+
+		$payload = $this->getJson($request);
+
+		$book->setTitle($payload['title']);
+		$book->setCatalog($catalog);
+
+		$entity->save($book);
+
+		return $this->asJson(
+			$response,
+			[
+				'id' => $book->getId(),
+				'title' => $book->getTitle(),
+				'catalog' => [
+					'id' => $book->getCatalog()->getId(),
+					'catalog_name' => $book->getCatalog()->getCatalogName()
+				]
+			]
+		);
 	}
 
 	public function delete(Request $request, Response $response, array $args): Response
