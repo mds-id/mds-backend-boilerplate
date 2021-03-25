@@ -25,10 +25,6 @@ trait EntityRepositoryTrait
 	 */
 	private function hasRelation(ModelInterface $model): bool
 	{
-		if (!$model->getRelationType()) {
-			return false;
-		}
-
 		switch ($model->getRelationType()) {
 			case RelationType::ONE_TO_ONE:
 			case RelationType::ONE_TO_MANY:
@@ -495,16 +491,16 @@ trait EntityRepositoryTrait
 			->getInflectorFactory()
 			->createSimpleInflector();
 		$queryBuilder      = $this->getQueryBuilder()
-			->select(sprintf('%s.*', $model->getTable()[0]))
-			->from($model->getTable(), $model->getTable()[0])
+			->select(sprintf('%s.*', $relationTargetObj->getTable()[0]))
+			->from($relationTargetObj->getTable(), $relationTargetObj->getTable()[0])
 			->join(
-				$model->getTable()[0],
-				$relationTargetObj->getTable(),
 				$relationTargetObj->getTable()[0],
+				$model->getTable(),
+				$model->getTable()[0],
 				sprintf(
 					'%s.%s = %s.%s',
 					$relationTargetObj->getTable()[0],
-					$relationTargetObj->getPrimaryKey(),
+					$inflector->snakeize($relationTargetObj->getForeignKey()),
 					$model->getTable()[0],
 					$model->getPrimaryKey()
 				)

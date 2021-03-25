@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Modspace\Core\Controller;
 
+use RuntimeException;
 use Throwable;
 use Modspace\Core\ContainerAwareInterface;
 use Modspace\Core\Dbal\EntityInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
 
 use function json_encode;
 
@@ -18,6 +20,16 @@ use function json_encode;
  */
 abstract class AbstractController implements ContainerAwareInterface
 {
+	/**
+	 * @var int
+	 */
+	const JSON_AS_ARRAY = 1;
+
+	/**
+	 * @var int
+	 */
+	const JSON_AS_OBJECT = 2;
+
 	/**
 	 * @var \Psr\Container\ContainerInterface
 	 */
@@ -66,6 +78,29 @@ abstract class AbstractController implements ContainerAwareInterface
 			->getBody()
 			->write(json_encode($data));
 		return $response->withStatus($code);
+	}
+
+	/**
+	 * @param \Psr\Http\Message\RequestInterface $request
+	 * @param int $jsonForm
+	 * @return array|object
+	 */
+	public function getJson(
+		RequestInterface $request,
+		int $jsonForm = AbstractController::JSON_AS_ARRAY
+	) {
+		if ($request->getHeader('Content-Type')[0] !== 'application/json') {
+			throw new RuntimeException(
+				"'Content-Type' must be 'application/json'."
+			);
+		}
+
+		return json_decode(
+			$request->getBody()->getContents(),
+			$jsonForm === AbstractController::JSON_AS_ARRAY
+				? true
+				: false
+		);
 	}
 
 	/**

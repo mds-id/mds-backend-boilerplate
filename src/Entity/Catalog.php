@@ -8,6 +8,7 @@ use Modspace\Core\Common\Collections\ArrayCollection;
 use Modspace\Core\Model\Model;
 use Modspace\Core\Model\Relation\RelationType;
 use Modspace\Entity\Book;
+use Modspace\Repository\CatalogRepository;
 
 class Catalog extends Model
 {

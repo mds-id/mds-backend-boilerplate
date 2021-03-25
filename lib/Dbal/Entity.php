@@ -20,6 +20,8 @@ use function ucfirst;
  */
 class Entity implements EntityInterface
 {
+	use EntityTrait;
+
 	/**
 	 * @var \Doctrine\DBAL\Connection
 	 */
@@ -80,6 +82,11 @@ class Entity implements EntityInterface
 	 */
 	public function persist(ModelInterface $model)
 	{
+		if (!$this->hasRelation($model)) {
+			$this->handleRelationalPersist($model);
+			return;
+		}
+
 		$normalized   = $this->transformEntity($model);
 		$queryBuilder = $this->getConnection()
 			->createQueryBuilder()
