@@ -37,4 +37,11 @@ interface Collection extends Countable, IteratorAggregate, ArrayAccess
 	 * @return void
 	 */
 	public function remove($data);
+
+	/**
+	 * Transform associated iterator to associative array.
+	 *
+	 * @return array
+	 */
+	public function toArray(): array;
 }

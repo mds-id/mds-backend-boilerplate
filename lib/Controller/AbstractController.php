@@ -119,9 +119,10 @@ abstract class AbstractController implements ContainerAwareInterface
 		$fault = [
 			'message' => $e->getMessage(),
 			'code'    => $e->getCode(),
-			'file'    => $e->getFile(),
-			'line'    => $e->getLine(),
-			'trace'   => $e->getTrace()
+			'trace'   => array_map(function($el) {
+				unset($el['file'], $el['line']);
+				return $el;
+			}, $e->getTrace())
 		];
 
 		return $this->asJson($response, $fault, $code);

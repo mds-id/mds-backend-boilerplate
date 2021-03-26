@@ -7,6 +7,7 @@ namespace Modspace\Core\Common\Collections;
 use ArrayIterator;
 use Traversable;
 
+use function iterator_to_array;
 use function sizeof;
 
 /**
@@ -110,5 +111,13 @@ class ArrayCollection implements Collection
 		}
 
 		$this->offsetUnset($this->getKey($data));
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function toArray(): array
+	{
+		return iterator_to_array($this, false);
 	}
 }

@@ -65,7 +65,7 @@ class CatalogController extends AbstractController
 						'id' => $el->getId(),
 						'title' => $el->getTitle()
 					];
-				}, iterator_to_array($catalog->getBooks(), false))
+				}, $catalog->getBooks()->toArray())
 			]
 		);
 	}
