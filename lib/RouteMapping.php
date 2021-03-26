@@ -202,9 +202,11 @@ class RouteMapping implements RouteMappingInterface
 
 		if (!method_exists($callable[0], $callable[1])) {
 			throw new InvalidArgumentException(
-				"Method with name '%s' not exists in controller '%s'.",
-				$callable[1],
-				$callable[0]
+				sprintf(
+					"Method with name '%s' not exists in controller '%s'.",
+					$callable[1],
+					$callable[0]
+				)
 			);
 		}
 	}

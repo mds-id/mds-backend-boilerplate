@@ -34,5 +34,8 @@ return function (RouteMappingInterface $router) {
 
 		$router->get('/catalog', [CatalogController::class, 'all']);
 		$router->get('/catalog/{catalog_id}', [CatalogController::class, 'getById']);
+		$router->post('/catalog', [CatalogController::class, 'create']);
+		$router->put('/catalog/{catalog_id}', [CatalogController::class, 'update']);
+		$router->delete('/catalog/{catalog_id}', [CatalogController::class, 'remove']);
 	});
 };

@@ -63,6 +63,31 @@ trait EntityTrait
 
 	private function handleOneToManyRelationalPersist(ModelInterface $model)
 	{
+		$normalized   = $this->transformEntity($model);
+		$queryBuilder = $this->getConnection()
+			->createQueryBuilder()
+			->insert($model->getTable());
+
+		foreach (array_keys($normalized) as $key) {
+			$queryBuilder = $queryBuilder->setValue($key, '?');
+		}
+
+		foreach (array_values($normalized) as $key => $value) {
+			$queryBuilder = $queryBuilder->setParameter($key, $value);
+		}
+
+		try {
+			$queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
+
+		$this->modelPropertyAccessor(
+			$model,
+			$model->getPrimaryKey(),
+			EntityInterface::MODEL_PROPERTY_ACCESS_WRITE,
+			$this->getConnection()->lastInsertId()
+		);
 	}
 
 	private function handleManyToOneRelationalPersist(ModelInterface $model)
@@ -139,6 +164,35 @@ trait EntityTrait
 
 	private function handleOneToManyRelationalSave(ModelInterface $model)
 	{
+		$normalized   = $this->transformEntity($model);
+		$inflector    = $this->getInflectorFactory()
+			->createSimpleInflector();
+		$queryBuilder = $this->getConnection()
+			->createQueryBuilder()
+			->update($model->getTable());
+
+		foreach (array_keys($normalized) as $key) {
+			$queryBuilder = $queryBuilder->set($key, '?');
+		}
+
+		foreach (array_values($normalized) as $key => $value) {
+			$queryBuilder = $queryBuilder->setParameter($key, $value);
+		}
+
+		$primaryKey   = $model->getPrimaryKey();
+		$normalized   = $inflector->snakeize($primaryKey);
+		$queryBuilder = $queryBuilder
+			->where(sprintf('%s = ?', $normalized))
+			->setParameter(
+				$key + 1,
+				call_user_func([$model, sprintf('get%s', ucfirst($primaryKey))])
+			);
+
+		try {
+			$queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
 	}
 
 	private function handleManyToOneRelationalSave(ModelInterface $model)

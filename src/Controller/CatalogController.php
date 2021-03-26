@@ -30,7 +30,7 @@ class CatalogController extends AbstractController
 						'id' => $el->getId(),
 						'title' => $el->getTitle(),
 					];
-				}, iterator_to_array($catalog->getBooks(), false))
+				}, $catalog->getBooks()->toArray())
 			];
 		}
 
@@ -72,13 +72,64 @@ class CatalogController extends AbstractController
 
 	public function create(Request $request, Response $response, array $args): Response
 	{
+		try {
+			$payload = $this->getJson($request);
+		} catch (Throwable $e) {
+			return $this->handleThrowedException($response, $e);
+		}
+
+		$entity  = $this->getEntity();
+		$catalog = new Catalog();
+
+		$catalog->setCatalogName($payload['catalog_name']);
+		$entity->persist($catalog);
+
+		return $this->asJson(
+			$response,
+			[
+				'id' => $catalog->getId(),
+				'catalog_name' => $catalog->getCatalogName()
+			]
+		);
 	}
 
 	public function update(Request $request, Response $response, array $args): Response
 	{
+		try {
+			$payload = $this->getJson($request);
+		} catch (Throwable $e) {
+			return $this->handleThrowedException($response, $e);
+		}
+
+		$entity  = $this->getEntity();
+		$catalog = $entity->getRepository(Catalog::class)
+			->find($args['catalog_id']);
+
+		if (null === $catalog) {
+			return $this->handleThrowedException(
+				$response,
+				new ErrorException(
+					sprintf(
+						'Catalog with id \'%s\' not found.',
+						$args['catalog_id']
+					)
+				)
+			);
+		}
+
+		$catalog->setCatalogName($payload['catalog_name']);
+		$entity->save($catalog);
+
+		return $this->asJson(
+			$response,
+			[
+				'id' => $catalog->getId(),
+				'catalog_name' => $catalog->getCatalogName()
+			]
+		);
 	}
 
-	public function delete(Request $request, Response $response, array $args): Response
+	public function remove(Request $request, Response $response, array $args): Response
 	{
 	}
 }
