@@ -131,5 +131,32 @@ class CatalogController extends AbstractController
 
 	public function remove(Request $request, Response $response, array $args): Response
 	{
+		$entity = $this->getEntity();
+		$catalog = $entity->getRepository(Catalog::class)
+			->find($args['catalog_id']);
+
+		if (null === $catalog) {
+			return $this->handleThrowedException(
+				$response,
+				new ErrorException(
+					sprintf(
+						'Catalog with id \'%s\' not found.',
+						$args['catalog_id']
+					)
+				)
+			);
+		}
+
+		$entity->remove($catalog);
+
+		return $this->asJson(
+			$response,
+			[
+				'message' => sprintf(
+					'Catalog with id \'%s\' has been removed.',
+					$args['catalog_id']
+				)
+			]
+		);
 	}
 }

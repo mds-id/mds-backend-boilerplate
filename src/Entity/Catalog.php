@@ -153,6 +153,14 @@ class Catalog extends Model
 	/**
 	 * {@inheritdoc}
 	 */
+	public function isOrphanRemoval(): bool
+	{
+		return true;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	protected function getDefaultTable(): string
 	{
 		return 'catalog';

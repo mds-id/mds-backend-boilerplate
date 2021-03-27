@@ -105,6 +105,14 @@ abstract class Model implements ModelInterface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function isOrphanRemoval(): bool
+	{
+		return false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	abstract public function getPrimaryKey(): string;
 
 	/**

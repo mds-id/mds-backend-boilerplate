@@ -83,4 +83,14 @@ interface ModelInterface
 	 * @return int
 	 */
 	public function getRelationType(): int;
+
+	/**
+	 * If current entity class object was deleted,
+	 * determine if it want to remove related record
+	 * with foreign key bounded to it's current entity
+	 * class object's primary key or otherwise.
+	 *
+	 * @return bool
+	 */
+	public function isOrphanRemoval(): bool;
 }

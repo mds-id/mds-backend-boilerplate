@@ -272,6 +272,7 @@ trait EntityTrait
 
 	private function handleOneToManyRelationalRemove(ModelInterface $model)
 	{
+		$this->handleOrphanRemoval($model);
 	}
 
 	private function handleManyToOneRelationalRemove(ModelInterface $model)
@@ -305,5 +306,42 @@ trait EntityTrait
 
 	private function handleManyToManyRelationalRemove(ModelInterface $model)
 	{
+	}
+
+	/**
+	 * Remove all orphan-related entity class objects from removed
+	 * parent entity class object.
+	 *
+	 * @param \Modspace\Core\Model\ModelInterface $model
+	 * @return void
+	 */
+	private function handleOrphanRemoval(ModelInterface $model)
+	{
+		$inflector = $this->getInflectorFactory()
+			->createSimpleInflector();
+		$childs    = call_user_func([
+			$model,
+			sprintf('get%s', ucfirst($model->getRelationBindObject()))
+		]);
+
+		foreach ($childs as $child) {
+			$primaryKey   = $inflector->snakeize($child->getPrimaryKey());
+			$foreignKey   = $inflector->snakeize($child->getForeignKey());
+			$queryBuilder = $this->getConnection()
+				->createQueryBuilder()
+				->delete($child->getTable())
+				->where(sprintf('%s = ?', $primaryKey))
+				->andWhere(sprintf('%s = ?', $foreignKey))
+				->setParameter(0, call_user_func([
+					$child,
+					sprintf('get%s', ucfirst($child->getPrimaryKey()))
+				]))
+				->setParameter(1, call_user_func([
+					$model,
+					sprintf('get%s', ucfirst($model->getPrimaryKey()))
+				]));
+
+			dump($queryBuilder->getSQL());
+		}
 	}
 }
