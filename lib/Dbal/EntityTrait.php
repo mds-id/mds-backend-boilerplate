@@ -57,10 +57,104 @@ trait EntityTrait
 		}
 	}
 
+	/**
+	 * Handle record persistence on entity model object that
+	 * have one-to-one relational mapping.
+	 *
+	 * @param ModelInterface $model
+	 * @return void
+	 */
 	private function handleOneToOneRelationalPersist(ModelInterface $model)
 	{
+		if ($model->getForeignKey() !== '') {
+			$this->handleInversedOneToOneRelationalPersist($model);
+			return;
+		}
+
+		$normalized = $this->transformEntity($model);
+		$queryBuilder = $this->getConnection()
+			->createQueryBuilder()
+			->insert($model->getTable());
+
+		foreach (array_keys($normalized) as $key) {
+			$queryBuilder = $queryBuilder->setValue($key, '?');
+		}
+
+		foreach (array_values($normalized) as $key => $value) {
+			$queryBuilder = $queryBuilder->setParameter($key, $value);
+		}
+
+		try {
+			$queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
+
+		$this->modelPropertyAccessor(
+			$model,
+			$model->getPrimaryKey(),
+			EntityInterface::MODEL_PROPERTY_ACCESS_WRITE,
+			$this->getConnection()->lastInsertId()
+		);
 	}
 
+	/**
+	 * Handle record persistence on entity model object that
+	 * have one-to-one inversed relational mapping.
+	 *
+	 * @param ModelInterface $model
+	 * @return void
+	 */
+	private function handleInversedOneToOneRelationalPersist(ModelInterface $model)
+	{
+		$inflector = $this->getInflectorFactory()
+			->createSimpleInflector();
+		$relationTargetObj = call_user_func([
+			$model,
+			sprintf('get%s', ucfirst($model->getRelationBindObject()))
+		]);
+		$foreignKey = $inflector->snakeize($model->getForeignKey());
+		$foreignKeyValue = call_user_func([
+			$relationTargetObj,
+			sprintf('get%s', ucfirst($relationTargetObj->getPrimaryKey()))
+		]);
+
+		$normalized = $this->transformEntity($model);
+		$queryBuilder = $this->getConnection()
+			->createQueryBuilder()
+			->insert($model->getTable());
+
+		$normalized[$foreignKey] = $foreignKeyValue;
+
+		foreach (array_keys($normalized) as $key) {
+			$queryBuilder = $queryBuilder->setValue($key, '?');
+		}
+
+		foreach (array_values($normalized) as $key => $value) {
+			$queryBuilder = $queryBuilder->setParameter($key, $value);
+		}
+
+		try {
+			$queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
+
+		$this->modelPropertyAccessor(
+			$model,
+			$model->getPrimaryKey(),
+			EntityInterface::MODEL_PROPERTY_ACCESS_WRITE,
+			$this->getConnection()->lastInsertId()
+		);
+	}
+
+	/**
+	 * Handle record persistence on entity mode object that
+	 * have one-to-many relational mapping.
+	 *
+	 * @param \Modspace\Core\Model\ModelInterface $model
+	 * @return void
+	 */
 	private function handleOneToManyRelationalPersist(ModelInterface $model)
 	{
 		$normalized   = $this->transformEntity($model);
@@ -90,6 +184,14 @@ trait EntityTrait
 		);
 	}
 
+	/**
+	 * Handle record persistence on entity model object that
+	 * have many-to-one relational mapping.
+	 *
+	 * @param \Modspace\Core\Model\ModelInterface $model
+	 * @return void
+	 * @throws \Throwable If query execution failed.
+	 */
 	private function handleManyToOneRelationalPersist(ModelInterface $model)
 	{
 		$normalized  = $this->transformEntity($model);
@@ -162,6 +264,14 @@ trait EntityTrait
 	{
 	}
 
+	/**
+	 * Handle record update on entity model object that
+	 * have one-to-many relational mapping.
+	 *
+	 * @param \Modspace\Core\Model\ModelInterface $model
+	 * @return void
+	 * @throws \Throwable If query execution failed.
+	 */
 	private function handleOneToManyRelationalSave(ModelInterface $model)
 	{
 		$normalized   = $this->transformEntity($model);
@@ -195,6 +305,14 @@ trait EntityTrait
 		}
 	}
 
+	/**
+	 * Handle record update on entity model object that
+	 * have many-to-one relational mapping.
+	 *
+	 * @param \Modspace\Core\Model\ModelInterface $model
+	 * @return void
+	 * @throws \Throwable If query execution failed.
+	 */
 	private function handleManyToOneRelationalSave(ModelInterface $model)
 	{
 		$normalized  = $this->transformEntity($model);
@@ -270,11 +388,55 @@ trait EntityTrait
 	{
 	}
 
+	/**
+	 * Handle record removal on entity model object that
+	 * have one-to-many relational mapping.
+	 *
+	 * @param \Modspace\Core\Model\ModelInterface $model
+	 * @return void
+	 * @throws \Throwable If query execution failed.
+	 */
 	private function handleOneToManyRelationalRemove(ModelInterface $model)
 	{
-		$this->handleOrphanRemoval($model);
+		if ($model->isOrphanRemoval()) {
+			$this->handleOrphanRemoval($model);
+		}
+
+		$inflector = $this->getInflectorFactory()
+			->createSimpleInflector();
+		$primaryKey = $inflector->snakeize($model->getPrimaryKey());
+		$primaryKeyValue = call_user_func([
+			$model,
+			sprintf('get%s', ucfirst($model->getPrimaryKey()))
+		]);
+
+		if (null === $primaryKeyValue) {
+			throw new RuntimeException(
+				'Primary key value must not be null.'
+			);
+		}
+
+		$queryBuilder = $this->getConnection()
+			->createQueryBuilder()
+			->delete($model->getTable())
+			->where(sprintf('%s = ?', $primaryKey))
+			->setParameter(0, $primaryKeyValue);
+
+		try {
+			$queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
 	}
 
+	/**
+	 * Handle record removal on entity model object that
+	 * have many-to-one relational mapping.
+	 *
+	 * @param \Modspace\Core\Model\ModelInterface $model
+	 * @return void
+	 * @throws \Throwable If query execution failed.
+	 */
 	private function handleManyToOneRelationalRemove(ModelInterface $model)
 	{
 		$inflector  = $this->getInflectorFactory()
@@ -341,7 +503,11 @@ trait EntityTrait
 					sprintf('get%s', ucfirst($model->getPrimaryKey()))
 				]));
 
-			dump($queryBuilder->getSQL());
+			try {
+				$queryBuilder->execute();
+			} catch (Throwable $e) {
+				break;
+			}
 		}
 	}
 }

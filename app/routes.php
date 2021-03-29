@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Modspace\Controller\BookController;
 use Modspace\Controller\CatalogController;
+use Modspace\Controller\StudentsController;
 use Modspace\Controller\UserController;
 use Modspace\Core\KernelInterface;
 use Modspace\Core\RouteMappingInterface;
@@ -37,5 +38,12 @@ return function (RouteMappingInterface $router) {
 		$router->post('/catalog', [CatalogController::class, 'create']);
 		$router->put('/catalog/{catalog_id}', [CatalogController::class, 'update']);
 		$router->delete('/catalog/{catalog_id}', [CatalogController::class, 'remove']);
+
+		// students
+		$router->get('/students', [StudentsController::class, 'all']);
+		$router->get('/students/{students_id}', [StudentsController::class, 'getById']);
+		$router->post('/students', [StudentsController::class, 'create']);
+		$router->put('/students/{students_id}', [StudentsController::class, 'update']);
+		$router->delete('/students/{students_id}', [StudentsController::class, 'delete']);
 	});
 };

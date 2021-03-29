@@ -68,6 +68,14 @@ class ContactInfo extends Model
 	/**
 	 * {@inheritdoc}
 	 */
+	public function getForeignKey(): string
+	{
+		return 'studentId';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function getPrimaryKey(): string
 	{
 		return 'id';
