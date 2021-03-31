@@ -7,6 +7,7 @@ namespace Modspace\Core\Dbal;
 use RuntimeException;
 use Throwable;
 use Modspace\Core\Dbal\EntityInterface;
+use Modspace\Core\Exception\Model\Relation\RelationRetrievalException;
 use Modspace\Core\Model\ModelInterface;
 use Modspace\Core\Model\Relation\RelationType;
 
@@ -260,8 +261,137 @@ trait EntityTrait
 		}
 	}
 
+	/**
+	 * Handle record update on entity model object that
+	 * have one-to-one relational mapping.
+	 *
+	 * @param \Modspace\Core\Model\ModelInterface $model
+	 * @return void
+	 * @throws \Throwable If query execution failed.
+	 */
 	private function handleOneToOneRelationalSave(ModelInterface $model)
 	{
+		if ($model->getForeignKey() !== '') {
+			$this->handleInvertedOneToOneRelationalSave($model);
+			return;
+		}
+
+		$normalized = $this->transformEntity($model);
+		$queryBuilder = $this->getConnection()
+			->createQueryBuilder()
+			->update($model->getTable());
+
+		foreach (array_keys($normalized) as $key) {
+			$queryBuilder = $queryBuilder->set($key, '?');
+		}
+
+		foreach (array_values($normalized) as $key => $value) {
+			$queryBuilder = $queryBuilder->setParameter($key, $value);
+		}
+
+		$inflector = $this->getInflectorFactory()
+			->createSimpleInflector();
+		$primaryKey = $inflector->snakeize($model->getPrimaryKey());
+		$queryBuilder = $queryBuilder
+			->where(sprintf('%s = ?', $primaryKey))
+			->setParameter(
+				$key + 1,
+				call_user_func([
+					$model,
+					sprintf('get%s', ucfirst($model->getPrimaryKey()))
+				])
+			);
+
+		try {
+			$queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
+	}
+
+	private function handleInvertedOneToOneRelationalSave(ModelInterface $model)
+	{
+		try {
+			$this->checkInvertedOneToOneRelationalConsistency($model);
+			return;
+		} catch (Throwable $e) {
+			throw $e;
+		}
+
+		$relationTargetObj = call_user_func([
+			$model,
+			sprintf('get%s', ucfirst($model->getRelationBindObject()))
+		]);
+
+		if (null === $relationTargetObj) {
+			throw new RelationRetrievalException(
+				'Relation object must not be null.'
+			);
+		}
+
+		$normalized = $this->transformEntity($model);
+		$queryBuilder = $this->getConnection()
+			->createQueryBuilder()
+			->update($model->getTable());
+
+		foreach (array_keys($normalized) as $key) {
+			$queryBuilder = $queryBuilder->set($key, '?');
+		}
+
+		foreach (array_values($normalized) as $key => $value) {
+			$queryBuilder = $queryBuilder->setParameter($key, $value);
+		}
+
+		$inflector = $this->getInflectorFactory()
+			->createSimpleInflector();
+		$primaryKey = $model->getPrimaryKey();
+		$foreignKey = $model->getForeignKey();
+		$primaryKeyValue = call_user_func([
+			$model,
+			sprintf('get%s', ucfirst($primaryKey))
+		]);
+		$foreignKeyValue = call_user_func([
+			$relationTargetObj,
+			sprintf('get%s', ucfirst($relationTargetObj->getPrimaryKey()))
+		]);
+		$queryBuilder = $queryBuilder
+			->where(sprintf('%s = ?', $inflector->snakeize($primaryKey)))
+			->andWhere(sprintf('%s = ?', $inflector->snakeize($foreignKey)))
+			->setParameter($key + 1, $primaryKeyValue)
+			->setParameter($key + 2, $foreignKeyValue);
+
+		try {
+			$queryBuilder->execute();
+		} catch (Exception $e) {
+			throw $e;
+		}
+	}
+
+	private function checkInvertedOneToOneRelationalConsistency(ModelInterface $model)
+	{
+		$relationTargetObj = call_user_func([
+			$model,
+			sprintf('get%s', ucfirst($model->getRelationBindObject()))
+		]);
+		$foreignKey = $model->getForeignKey();
+		$foreignKeyValue = call_user_func([
+			$relationTargetObj,
+			sprintf('get%s', ucfirst($relationTargetObj->getPrimaryKey()))
+		]);
+		$inflector = $this->getInflectorFactory()
+			->createSimpleInflector();
+		$queryBuilder = $this->getConnection()
+			->createQueryBuilder()
+			->select('count(*)')
+			->from($relationTargetObj->getTable())
+			->where(sprintf('%s = ?', $inflector->snakeize($foreignKey)))
+			->setParameter(0, $foreignKeyValue);
+
+		try {
+			dump($queryBuilder->execute());
+		} catch (Throwable $e) {
+			throw $e;
+		}
 	}
 
 	/**

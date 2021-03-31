@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Modspace\Controller;
 
+use ErrorException;
+use Modspace\Entity\Students;
 use Modspace\Core\Controller\AbstractController;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -21,11 +23,13 @@ class StudentsController extends AbstractController
 			$results[] = [
 				'id' => $student->getId(),
 				'name' => $student->getName(),
-				'contact_info' => [
-					'id' => $student->getContactInfo()->getId(),
-					'city' => $student->getContactInfo()->getCity(),
-					'phone' => $student->getContactInfo()->getPhone()
-				]
+				'contact_info' => null === $student->getContactInfo()
+					? []
+					: [
+						'id' => $student->getContactInfo()->getId(),
+						'city' => $student->getContactInfo()->getCity(),
+						'phone' => $student->getContactInfo()->getPhone()
+					]
 			];
 		}
 
@@ -44,7 +48,7 @@ class StudentsController extends AbstractController
 				new ErrorException(
 					sprintf(
 						'Data student with id \'%s\' not found.',
-						$args['student_id']
+						$args['students_id']
 					)
 				)
 			);
@@ -55,11 +59,13 @@ class StudentsController extends AbstractController
 			[
 				'id' => $student->getId(),
 				'name' => $student->getName(),
-				'contact_info' => [
-					'id' => $student->getContactInfo()->getId(),
-					'city' => $student->getContactInfo()->getCity(),
-					'phone' => $student->getContactInfo()->getPhone()
-				]
+				'contact_info' => null === $student->getContactInfo()
+					? []
+					: [
+						'id' => $student->getContactInfo()->getId(),
+						'city' => $student->getContactInfo()->getCity(),
+						'phone' => $student->getContactInfo()->getPhone()
+					]
 			]
 		);
 	}
@@ -75,7 +81,7 @@ class StudentsController extends AbstractController
 		$entity = $this->getEntity();
 		$student = new Students();
 
-		$student->getName($payload['name']);
+		$student->setName($payload['name']);
 		$entity->persist($student);
 
 		return $this->asJson(

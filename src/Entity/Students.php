@@ -21,7 +21,7 @@ class Students extends Model
 	private $name;
 
 	/**
-	 * @var \Modspace\Entity\ContactInfo
+	 * @var \Modspace\Entity\ContactInfo|null
 	 */
 	private $contactInfo;
 
@@ -40,12 +40,12 @@ class Students extends Model
 		$this->name = $name;
 	}
 
-	public function getContactInfo(): ContactInfo
+	public function getContactInfo(): ?ContactInfo
 	{
 		return $this->contactInfo;
 	}
 
-	public function setContactInfo(ContactInfo $contactInfo)
+	public function setContactInfo(?ContactInfo $contactInfo)
 	{
 		$this->contactInfo = $contactInfo;
 	}

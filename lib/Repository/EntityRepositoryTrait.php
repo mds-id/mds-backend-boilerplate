@@ -116,6 +116,10 @@ trait EntityRepositoryTrait
 			? $this->fetchQuantizationSingle($statement, $model)
 			: $this->fetchQuantizationMultiple($statement, $model);
 
+		if ($parent === null) {
+			return null;
+		}
+
 		if ($parent instanceof ModelInterface) {
 			return $this->relationResolver($parent, RelationType::ONE_TO_ONE);
 		}
@@ -381,12 +385,12 @@ trait EntityRepositoryTrait
 	 *
 	 * @param \Modspace\Core\Model\ModelInterface $model
 	 * @param int $relationType
-	 * @return \Modspace\Core\Model\ModelInterface
+	 * @return \Modspace\Core\Model\ModelInterface|null
 	 */
 	private function relationResolver(
 		ModelInterface $model,
 		int $relationType
-	): ModelInterface {
+	) {
 		if (!$this->hasRelation($model)) {
 			throw new InvalidArgumentException(
 				"Given entity class model have no relation."
@@ -423,9 +427,9 @@ trait EntityRepositoryTrait
 	 * relationship.
 	 *
 	 * @param \Modspace\Core\Model\ModelInterface $model
-	 * @return \Modspace\Core\Model\ModelInterface
+	 * @return \Modspace\Core\Model\ModelInterface|null
 	 */
-	private function oneToOneRelationResolver(ModelInterface $model): ModelInterface
+	private function oneToOneRelationResolver(ModelInterface $model)
 	{
 		$relationTarget    = $model->getRelationTargetClass();
 		$relationTargetObj = new $relationTarget();
@@ -433,24 +437,24 @@ trait EntityRepositoryTrait
 			->getInflectorFactory()
 			->createSimpleInflector();
 		$queryBuilder      = $this->getQueryBuilder()
-			->select(sprintf('%s.*', $model->getTable()[0]))
-			->from($model->getTable(), $model->getTable()[0])
+			->select(sprintf('%s.*', $relationTargetObj->getTable()[0]))
+			->from($relationTargetObj->getTable(), $relationTargetObj->getTable()[0])
 			->join(
-				$model->getTable()[0],
-				$relationTargetObj->getTable(),
 				$relationTargetObj->getTable()[0],
+				$model->getTable(),
+				$model->getTable()[0],
 				sprintf(
 					'%s.%s = %s.%s',
 					$relationTargetObj->getTable()[0],
-					$relationTargetObj->getForeignKey(),
+					$inflector->snakeize($relationTargetObj->getForeignKey()),
 					$model->getTable()[0],
-					$model->getPrimaryKey()
+					$inflector->snakeize($model->getPrimaryKey())
 				)
 			)
 			->where(sprintf(
 				'%s.%s = ?',
-				$model->getTable()[0],
-				$model->getPrimaryKey()
+				$relationTargetObj->getTable()[0],
+				$inflector->snakeize($relationTargetObj->getForeignKey())
 			))
 			->setParameter(
 				0,
@@ -470,6 +474,10 @@ trait EntityRepositoryTrait
 			$statement,
 			$relationTargetObj
 		);
+
+		if (null === $relationTargetObj) {
+			return $model;
+		}
 
 		$this->getEntity()
 			->modelPropertyAccessor(
