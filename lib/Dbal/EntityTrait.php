@@ -12,6 +12,13 @@ use Modspace\Core\Exception\Model\Relation\RelationRetrievalException;
 use Modspace\Core\Model\ModelInterface;
 use Modspace\Core\Model\Relation\RelationType;
 
+use function array_keys;
+use function array_values;
+use function call_user_func;
+use function get_class;
+use function sprintf;
+use function ucfirst;
+
 /**
  * @author Paulus Gandung Prakosa <rvn.plvhx@gmail.com>
  */

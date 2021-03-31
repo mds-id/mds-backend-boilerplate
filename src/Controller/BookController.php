@@ -18,10 +18,10 @@ class BookController extends AbstractController
 		$books = $this->getEntity()
 			->getRepository(Book::class)
 			->findAll();
-		$result = [];
+		$results = [];
 
 		foreach ($books as $book) {
-			$result[] = [
+			$results[] = [
 				'id' => $book->getId(),
 				'title' => $book->getTitle(),
 				'catalog' => [
@@ -31,7 +31,7 @@ class BookController extends AbstractController
 			];
 		}
 
-		return $this->asJson($response, $result);
+		return $this->asJson($response, $results);
 	}
 
 	public function getById(Request $request, Response $response, array $args): Response
