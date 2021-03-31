@@ -431,6 +431,10 @@ trait EntityRepositoryTrait
 	 */
 	private function oneToOneRelationResolver(ModelInterface $model)
 	{
+		if ($model->getForeignKey() !== '') {
+			return $model->oneToOneInversedRelationResolver($model);
+		}
+
 		$relationTarget    = $model->getRelationTargetClass();
 		$relationTargetObj = new $relationTarget();
 		$inflector         = $this->getEntity()
@@ -482,12 +486,16 @@ trait EntityRepositoryTrait
 		$this->getEntity()
 			->modelPropertyAccessor(
 				$model,
-				$relationTargetObj->getRelationBindObject(),
+				$model->getRelationBindObject(),
 				EntityInterface::MODEL_PROPERTY_ACCESS_WRITE,
 				$relationTargetObj
 			);
 
 		return $model;
+	}
+
+	private function oneToOneInversedRelationResolver(ModelInterface $model)
+	{
 	}
 
 	/**

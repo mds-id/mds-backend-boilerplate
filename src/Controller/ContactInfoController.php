@@ -79,7 +79,8 @@ class ContactInfoController extends AbstractController
 		}
 
 		$entity = $this->getEntity();
-		$student = $entity->getRepository(Students::class);
+		$student = $entity->getRepository(Students::class)
+			->find($args['students_id']);
 
 		if (null === $student) {
 			return $this->handleThrowedException(
