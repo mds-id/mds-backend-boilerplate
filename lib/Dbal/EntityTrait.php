@@ -281,15 +281,9 @@ trait EntityTrait
 	 *
 	 * @param \Modspace\Core\Model\ModelInterface $model
 	 * @return void
-	 * @throws \Throwable If query execution failed.
 	 */
 	private function handleOneToOneRelationalSave(ModelInterface $model)
 	{
-		if ($model->getForeignKey() !== '') {
-			$this->handleInvertedOneToOneRelationalSave($model);
-			return;
-		}
-
 		$normalized = $this->transformEntity($model);
 		$queryBuilder = $this->getConnection()
 			->createQueryBuilder()
