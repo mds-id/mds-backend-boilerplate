@@ -7,6 +7,7 @@ namespace Modspace\Core\Dbal;
 use RuntimeException;
 use Throwable;
 use Modspace\Core\Dbal\EntityInterface;
+use Modspace\Core\Exception\Dbal\DispatchedQueryException;
 use Modspace\Core\Exception\Model\Relation\RelationIntegrityException;
 use Modspace\Core\Exception\Model\Relation\RelationRetrievalException;
 use Modspace\Core\Model\ModelInterface;
@@ -321,7 +322,6 @@ trait EntityTrait
 	{
 		try {
 			$this->checkInvertedOneToOneRelationalConsistency($model);
-			return;
 		} catch (Throwable $e) {
 			throw $e;
 		}
@@ -375,6 +375,13 @@ trait EntityTrait
 		}
 	}
 
+	/**
+	 * Check entity class object that have one-to-one relational
+	 * consistency on inverted side.
+	 *
+	 * @param \Modspace\Core\Model\ModelInterface $model
+	 * @return void
+	 */
 	private function checkInvertedOneToOneRelationalConsistency(ModelInterface $model)
 	{
 		$relationTargetObj = call_user_func([
@@ -398,7 +405,11 @@ trait EntityTrait
 		try {
 			$statement = $queryBuilder->execute();
 		} catch (Throwable $e) {
-			throw $e;
+			throw new DispatchedQueryException(
+				$e->getMessage(),
+				$e->getCode(),
+				$e
+			);
 		}
 
 		$results = array_values($statement->fetchAssociative());
