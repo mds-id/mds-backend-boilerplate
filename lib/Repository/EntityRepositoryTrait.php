@@ -432,7 +432,7 @@ trait EntityRepositoryTrait
 	private function oneToOneRelationResolver(ModelInterface $model)
 	{
 		if ($model->getForeignKey() !== '') {
-			return $model->oneToOneInversedRelationResolver($model);
+			return $this->oneToOneInversedRelationResolver($model);
 		}
 
 		$relationTarget    = $model->getRelationTargetClass();
@@ -496,6 +496,64 @@ trait EntityRepositoryTrait
 
 	private function oneToOneInversedRelationResolver(ModelInterface $model)
 	{
+		$relationTarget = $model->getRelationTargetClass();
+		$relationTargetObj = new $relationTarget();
+		$inflector = $this->getEntity()
+			->getInflectorFactory()
+			->createSimpleInflector();
+
+		$queryBuilder = $this->getQueryBuilder()
+			->select(sprintf('%s.*', $relationTargetObj->getTable()[0]))
+			->from($relationTargetObj->getTable(), $relationTargetObj->getTable()[0])
+			->join(
+				$relationTargetObj->getTable()[0],
+				$model->getTable(),
+				$model->getTable()[0],
+				sprintf(
+					'%s.%s = %s.%s',
+					$relationTargetObj->getTable()[0],
+					$inflector->snakeize($relationTargetObj->getPrimaryKey()),
+					$model->getTable()[0],
+					$inflector->snakeize($model->getForeignKey())
+				)
+			)
+			->where(sprintf(
+				'%s.%s = ?',
+				$model->getTable()[0],
+				$inflector->snakeize($model->getPrimaryKey())
+			))
+			->setParameter(
+				0,
+				call_user_func([
+					$model,
+					sprintf('get%s', ucfirst($model->getPrimaryKey()))
+				])
+			);
+
+		try {
+			$statement = $queryBuilder->execute();
+		} catch (Throwable $e) {
+			throw $e;
+		}
+
+		$relationTargetObj = $this->fetchQuantizationSingle(
+			$statement,
+			$relationTargetObj
+		);
+
+		if (null === $relationTargetObj) {
+			return $model;
+		}
+
+		$this->getEntity()
+			->modelPropertyAccessor(
+				$model,
+				$model->getRelationBindObject(),
+				EntityInterface::MODEL_PROPERTY_ACCESS_WRITE,
+				$relationTargetObj
+			);
+
+		return $model;
 	}
 
 	/**

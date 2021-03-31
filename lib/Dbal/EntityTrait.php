@@ -7,6 +7,7 @@ namespace Modspace\Core\Dbal;
 use RuntimeException;
 use Throwable;
 use Modspace\Core\Dbal\EntityInterface;
+use Modspace\Core\Exception\Model\Relation\RelationIntegrityException;
 use Modspace\Core\Exception\Model\Relation\RelationRetrievalException;
 use Modspace\Core\Model\ModelInterface;
 use Modspace\Core\Model\Relation\RelationType;
@@ -108,6 +109,12 @@ trait EntityTrait
 	 */
 	private function handleInversedOneToOneRelationalPersist(ModelInterface $model)
 	{
+		try {
+			$this->checkInvertedOneToOneRelationalConsistency($model);
+		} catch (Throwable $e) {
+			throw $e;
+		}
+
 		$inflector = $this->getInflectorFactory()
 			->createSimpleInflector();
 		$relationTargetObj = call_user_func([
@@ -383,14 +390,26 @@ trait EntityTrait
 		$queryBuilder = $this->getConnection()
 			->createQueryBuilder()
 			->select('count(*)')
-			->from($relationTargetObj->getTable())
+			->from($model->getTable())
 			->where(sprintf('%s = ?', $inflector->snakeize($foreignKey)))
 			->setParameter(0, $foreignKeyValue);
 
 		try {
-			dump($queryBuilder->execute());
+			$statement = $queryBuilder->execute();
 		} catch (Throwable $e) {
 			throw $e;
+		}
+
+		$results = array_values($statement->fetchAssociative());
+		$fieldCount = intval($results[0]);
+
+		if ($fieldCount === 1) {
+			throw new RelationIntegrityException(
+				sprintf(
+					'Primary key of entity class \'%s\' has been occupied.',
+					get_class($relationTargetObj)
+				)
+			);
 		}
 	}
 

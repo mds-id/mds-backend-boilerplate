@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modspace\Controller;
 
+use ErrorException;
 use Modspace\Entity\ContactInfo;
 use Modspace\Entity\Students;
 use Modspace\Core\Controller\AbstractController;
